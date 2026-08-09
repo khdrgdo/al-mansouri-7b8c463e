@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MapRouteImport } from './routes/map'
 import { Route as HistoryIndexRouteImport } from './routes/history.index'
 import { Route as HistorySlugRouteImport } from './routes/history.$slug'
 import { Route as LocationsIndexRouteImport } from './routes/locations.index'
@@ -18,6 +19,11 @@ import { Route as LocationsSlugRouteImport } from './routes/locations.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryIndexRoute = HistoryIndexRouteImport.update({
@@ -43,6 +49,7 @@ const LocationsSlugRoute = LocationsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/map': typeof MapRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/history/': typeof HistoryIndexRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/map': typeof MapRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/history': typeof HistoryIndexRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/map': typeof MapRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/history/': typeof HistoryIndexRoute
@@ -66,12 +75,24 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/history/$slug' | '/locations/$slug' | '/history/' | '/locations/'
+    | '/'
+    | '/map'
+    | '/history/$slug'
+    | '/locations/$slug'
+    | '/history/'
+    | '/locations/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history/$slug' | '/locations/$slug' | '/history' | '/locations'
+  to:
+    | '/'
+    | '/map'
+    | '/history/$slug'
+    | '/locations/$slug'
+    | '/history'
+    | '/locations'
   id:
     | '__root__'
     | '/'
+    | '/map'
     | '/history/$slug'
     | '/locations/$slug'
     | '/history/'
@@ -80,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MapRoute: typeof MapRoute
   HistorySlugRoute: typeof HistorySlugRoute
   LocationsSlugRoute: typeof LocationsSlugRoute
   HistoryIndexRoute: typeof HistoryIndexRoute
@@ -93,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history/': {
@@ -128,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MapRoute: MapRoute,
   HistorySlugRoute: HistorySlugRoute,
   LocationsSlugRoute: LocationsSlugRoute,
   HistoryIndexRoute: HistoryIndexRoute,
