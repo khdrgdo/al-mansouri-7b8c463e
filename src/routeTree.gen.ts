@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
+import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as HistoryIndexRouteImport } from './routes/history.index'
 import { Route as HistorySlugRouteImport } from './routes/history.$slug'
 import { Route as LocationsIndexRouteImport } from './routes/locations.index'
@@ -32,6 +33,11 @@ const MapRoute = MapRouteImport.update({
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   id: '/articles/',
   path: '/articles/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
+  id: '/articles/$slug',
+  path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryIndexRoute = HistoryIndexRouteImport.update({
@@ -68,6 +74,7 @@ const PeopleSlugRoute = PeopleSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/map': typeof MapRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/people/$slug': typeof PeopleSlugRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/map': typeof MapRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/people/$slug': typeof PeopleSlugRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/map': typeof MapRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/people/$slug': typeof PeopleSlugRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/map'
+    | '/articles/$slug'
     | '/history/$slug'
     | '/locations/$slug'
     | '/people/$slug'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/map'
+    | '/articles/$slug'
     | '/history/$slug'
     | '/locations/$slug'
     | '/people/$slug'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/map'
+    | '/articles/$slug'
     | '/history/$slug'
     | '/locations/$slug'
     | '/people/$slug'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MapRoute: typeof MapRoute
+  ArticlesSlugRoute: typeof ArticlesSlugRoute
   HistorySlugRoute: typeof HistorySlugRoute
   LocationsSlugRoute: typeof LocationsSlugRoute
   PeopleSlugRoute: typeof PeopleSlugRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/articles'
       fullPath: '/articles/'
       preLoaderRoute: typeof ArticlesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles/$slug': {
+      id: '/articles/$slug'
+      path: '/articles/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history/': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MapRoute: MapRoute,
+  ArticlesSlugRoute: ArticlesSlugRoute,
   HistorySlugRoute: HistorySlugRoute,
   LocationsSlugRoute: LocationsSlugRoute,
   PeopleSlugRoute: PeopleSlugRoute,
