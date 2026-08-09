@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as HistoryIndexRouteImport } from './routes/history.index'
 import { Route as HistorySlugRouteImport } from './routes/history.$slug'
 import { Route as LocationsIndexRouteImport } from './routes/locations.index'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryIndexRoute = HistoryIndexRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/people/$slug': typeof PeopleSlugRoute
+  '/articles/': typeof ArticlesIndexRoute
   '/history/': typeof HistoryIndexRoute
   '/locations/': typeof LocationsIndexRoute
   '/people/': typeof PeopleIndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/people/$slug': typeof PeopleSlugRoute
+  '/articles': typeof ArticlesIndexRoute
   '/history': typeof HistoryIndexRoute
   '/locations': typeof LocationsIndexRoute
   '/people': typeof PeopleIndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
   '/people/$slug': typeof PeopleSlugRoute
+  '/articles/': typeof ArticlesIndexRoute
   '/history/': typeof HistoryIndexRoute
   '/locations/': typeof LocationsIndexRoute
   '/people/': typeof PeopleIndexRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/history/$slug'
     | '/locations/$slug'
     | '/people/$slug'
+    | '/articles/'
     | '/history/'
     | '/locations/'
     | '/people/'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/history/$slug'
     | '/locations/$slug'
     | '/people/$slug'
+    | '/articles'
     | '/history'
     | '/locations'
     | '/people'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/history/$slug'
     | '/locations/$slug'
     | '/people/$slug'
+    | '/articles/'
     | '/history/'
     | '/locations/'
     | '/people/'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   HistorySlugRoute: typeof HistorySlugRoute
   LocationsSlugRoute: typeof LocationsSlugRoute
   PeopleSlugRoute: typeof PeopleSlugRoute
+  ArticlesIndexRoute: typeof ArticlesIndexRoute
   HistoryIndexRoute: typeof HistoryIndexRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   PeopleIndexRoute: typeof PeopleIndexRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history/': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistorySlugRoute: HistorySlugRoute,
   LocationsSlugRoute: LocationsSlugRoute,
   PeopleSlugRoute: PeopleSlugRoute,
+  ArticlesIndexRoute: ArticlesIndexRoute,
   HistoryIndexRoute: HistoryIndexRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   PeopleIndexRoute: PeopleIndexRoute,
