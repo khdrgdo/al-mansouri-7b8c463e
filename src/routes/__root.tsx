@@ -79,14 +79,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ذاكرة المناصير" },
+      { title: "ذاكرة المناصير | أرشيف التاريخ والتراث والمناطق" },
       {
         name: "description",
-        content: "دليل رقمي يحفظ تاريخ المناصير ومناطقهم وتراثهم وذاكرتهم.",
+        content: "منصة ذاكرة المناصير: تاريخ موثّق، مناطق وقرى، خريطة تفاعلية، أرشيف صور ووثائق، شخصيات، ومقالات ومساهمات الزوار.",
       },
       { property: "og:site_name", content: "ذاكرة المناصير" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "ذاكرة المناصير | أرشيف التاريخ والتراث والمناطق" },
+      { name: "twitter:title", content: "ذاكرة المناصير | أرشيف التاريخ والتراث والمناطق" },
+      { property: "og:description", content: "منصة ذاكرة المناصير: تاريخ موثّق، مناطق وقرى، خريطة تفاعلية، أرشيف صور ووثائق، شخصيات، ومقالات ومساهمات الزوار." },
+      { name: "twitter:description", content: "منصة ذاكرة المناصير: تاريخ موثّق، مناطق وقرى، خريطة تفاعلية، أرشيف صور ووثائق، شخصيات، ومقالات ومساهمات الزوار." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/560139cd7bce16a78c4e238d6e4022e9/id-preview-a70ec17e--e0ce0c2e-f773-4727-b56f-34a1bc51163c.lovable.app-1786292590843.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/560139cd7bce16a78c4e238d6e4022e9/id-preview-a70ec17e--e0ce0c2e-f773-4727-b56f-34a1bc51163c.lovable.app-1786292590843.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
