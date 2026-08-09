@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdsRouteImport } from './routes/ads'
 import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -39,6 +40,11 @@ const AdsRoute = AdsRouteImport.update({
 const ArchiveRoute = ArchiveRouteImport.update({
   id: '/archive',
   path: '/archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContributeRoute = ContributeRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ads': typeof AdsRoute
   '/archive': typeof ArchiveRoute
+  '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
   '/map': typeof MapRoute
   '/privacy': typeof PrivacyRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ads': typeof AdsRoute
   '/archive': typeof ArchiveRoute
+  '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
   '/map': typeof MapRoute
   '/privacy': typeof PrivacyRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ads': typeof AdsRoute
   '/archive': typeof ArchiveRoute
+  '/contact': typeof ContactRoute
   '/contribute': typeof ContributeRoute
   '/map': typeof MapRoute
   '/privacy': typeof PrivacyRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ads'
     | '/archive'
+    | '/contact'
     | '/contribute'
     | '/map'
     | '/privacy'
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ads'
     | '/archive'
+    | '/contact'
     | '/contribute'
     | '/map'
     | '/privacy'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ads'
     | '/archive'
+    | '/contact'
     | '/contribute'
     | '/map'
     | '/privacy'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdsRoute: typeof AdsRoute
   ArchiveRoute: typeof ArchiveRoute
+  ContactRoute: typeof ContactRoute
   ContributeRoute: typeof ContributeRoute
   MapRoute: typeof MapRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/archive'
       fullPath: '/archive'
       preLoaderRoute: typeof ArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contribute': {
@@ -359,6 +379,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdsRoute: AdsRoute,
   ArchiveRoute: ArchiveRoute,
+  ContactRoute: ContactRoute,
   ContributeRoute: ContributeRoute,
   MapRoute: MapRoute,
   PrivacyRoute: PrivacyRoute,
