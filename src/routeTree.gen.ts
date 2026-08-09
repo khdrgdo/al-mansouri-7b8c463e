@@ -14,6 +14,7 @@ import { Route as AdsRouteImport } from './routes/ads'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as ContributeRouteImport } from './routes/contribute'
 import { Route as MapRouteImport } from './routes/map'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
@@ -47,6 +48,11 @@ const ContributeRoute = ContributeRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/archive': typeof ArchiveRoute
   '/contribute': typeof ContributeRoute
   '/map': typeof MapRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/archive': typeof ArchiveRoute
   '/contribute': typeof ContributeRoute
   '/map': typeof MapRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/archive': typeof ArchiveRoute
   '/contribute': typeof ContributeRoute
   '/map': typeof MapRoute
+  '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/archive'
     | '/contribute'
     | '/map'
+    | '/privacy'
     | '/search'
     | '/articles/$slug'
     | '/history/$slug'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/archive'
     | '/contribute'
     | '/map'
+    | '/privacy'
     | '/search'
     | '/articles/$slug'
     | '/history/$slug'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/archive'
     | '/contribute'
     | '/map'
+    | '/privacy'
     | '/search'
     | '/articles/$slug'
     | '/history/$slug'
@@ -201,6 +213,7 @@ export interface RootRouteChildren {
   ArchiveRoute: typeof ArchiveRoute
   ContributeRoute: typeof ContributeRoute
   MapRoute: typeof MapRoute
+  PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
   HistorySlugRoute: typeof HistorySlugRoute
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -321,6 +341,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArchiveRoute: ArchiveRoute,
   ContributeRoute: ContributeRoute,
   MapRoute: MapRoute,
+  PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
   HistorySlugRoute: HistorySlugRoute,
