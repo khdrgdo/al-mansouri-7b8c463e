@@ -71,9 +71,9 @@ export async function moderate(
     action: `moderate_${status}`,
     contentType: target,
     contentId: id,
-    previousValues: { status: (before as Record<string, unknown>)["status"] },
+    previousValues: { status: (before as unknown as Record<string, unknown>)["status"] },
     newValues: values,
   });
 
-  return data as Record<string, unknown>;
+  return data as unknown as Record<string, unknown>;
 }

@@ -301,7 +301,7 @@ export async function createContent(
     throw new ServiceError("failed", error.message);
   }
 
-  const row = data as Record<string, unknown>;
+  const row = data as unknown as Record<string, unknown>;
   await recordAudit(actor, {
     toolName,
     action: "create",
@@ -360,7 +360,7 @@ export async function updateContent(
 
   const previous: Record<string, unknown> = {};
   for (const key of Object.keys(values)) {
-    previous[key] = (before as Record<string, unknown>)[key] ?? null;
+    previous[key] = (before as unknown as Record<string, unknown>)[key] ?? null;
   }
 
   await recordAudit(actor, {
@@ -372,7 +372,7 @@ export async function updateContent(
     newValues: values,
   });
 
-  const row = data as Record<string, unknown>;
+  const row = data as unknown as Record<string, unknown>;
   return { ...row, public_url: publicUrl(type, row) };
 }
 
@@ -410,7 +410,7 @@ export async function deleteContent(
       action: "soft_delete",
       contentType: type,
       contentId: id,
-      previousValues: before as Record<string, unknown>,
+      previousValues: before as unknown as Record<string, unknown>,
       newValues: values,
     });
     return { id, mode, message: `تمت أرشفة ${cfg.label} (إخفاء من الموقع دون حذف نهائي).` };
@@ -433,7 +433,7 @@ export async function deleteContent(
     action: "delete",
     contentType: type,
     contentId: id,
-    previousValues: before as Record<string, unknown>,
+    previousValues: before as unknown as Record<string, unknown>,
   });
   return { id, mode, message: `تم حذف ${cfg.label} نهائيًا.` };
 }
