@@ -375,6 +375,57 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_client: string | null
+          actor_email: string | null
+          actor_id: string | null
+          content_id: string | null
+          content_type: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          new_values: Json | null
+          previous_values: Json | null
+          result: string
+          source: string
+          tool_name: string
+        }
+        Insert: {
+          action: string
+          actor_client?: string | null
+          actor_email?: string | null
+          actor_id?: string | null
+          content_id?: string | null
+          content_type?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          new_values?: Json | null
+          previous_values?: Json | null
+          result?: string
+          source?: string
+          tool_name: string
+        }
+        Update: {
+          action?: string
+          actor_client?: string | null
+          actor_email?: string | null
+          actor_id?: string | null
+          content_id?: string | null
+          content_type?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          new_values?: Json | null
+          previous_values?: Json | null
+          result?: string
+          source?: string
+          tool_name?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -699,6 +750,30 @@ export type Database = {
           sources?: string | null
           updated_at?: string
           verification?: string
+        }
+        Relationships: []
+      }
+      mcp_capabilities: {
+        Row: {
+          enabled: boolean
+          key: string
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          key: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          key?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
