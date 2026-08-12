@@ -26,11 +26,7 @@ export default defineTool({
       for (const type of types) {
         const cfg = CONTENT[type];
         const titleCol = cfg.titleField;
-        type Loose = {
-          eq: (col: string, val: unknown) => Loose;
-          limit: (n: number) => Loose;
-          then: never;
-        };
+        type Loose = { eq: (col: string, val: unknown) => Loose };
         let q = actor.client
           .from(cfg.table)
           .select(cfg.publicSelect)
