@@ -114,7 +114,7 @@ export const CONTENT: Record<ContentType, ContentConfig> = {
     publicSelect:
       "id, slug, name, kind, description, history, address, latitude, longitude, cover_image_url, images, sources, verification, published, created_at, updated_at",
     urlPath: "/locations/",
-    requiresSource: false,
+    requiresSource: true,
     publishable: true,
   },
   person: {
