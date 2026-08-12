@@ -29,7 +29,13 @@ export default defineMcp({
     // Its JWKS/discovery documents live at the standard well-known paths
     // under the same origin, so no separate jwksUri is needed.
     issuer: `${supabaseProjectUrl()}/auth/v1`,
-    resource: "al-mansouri-memory-mcp",
+    // Supabase mints a project-wide `aud: "authenticated"` claim, not a
+    // per-resource one (per the SDK's own guidance) — so audience
+    // acceptance is checked against that fixed value, and actual
+    // per-caller authorization happens downstream in src/lib/services
+    // (via ctx.getClaims()/getClientId()), not via audience matching.
+    acceptedAudiences: "authenticated",
+    resourceName: "ذاكرة المناصير",
   }),
   tools: [
     createContent,
