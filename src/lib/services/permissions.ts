@@ -3,7 +3,8 @@ import { ServiceError } from "./types";
 
 const ROLE_PERMISSIONS: Record<Actor["role"], Permission[]> = {
   admin: ["read", "create", "update", "publish", "moderate", "delete", "manage_settings"],
-  editor: ["read", "create", "update", "publish", "moderate"],
+  // Publishing is deliberately admin-only.
+  editor: ["read", "create", "update", "moderate"],
   guest: ["read"],
 };
 

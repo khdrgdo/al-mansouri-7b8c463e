@@ -845,6 +845,42 @@ export type Database = {
           },
         ]
       }
+      publish_batches: {
+        Row: {
+          actor_client: string | null
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          id: string
+          items: Json
+          rolled_back_at: string | null
+          skipped: Json
+          tool_name: string
+        }
+        Insert: {
+          actor_client?: string | null
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          rolled_back_at?: string | null
+          skipped?: Json
+          tool_name?: string
+        }
+        Update: {
+          actor_client?: string | null
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          rolled_back_at?: string | null
+          skipped?: Json
+          tool_name?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string

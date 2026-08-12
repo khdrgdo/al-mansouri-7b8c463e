@@ -5,7 +5,7 @@ export type AuditEntry = {
   action: string;
   contentType?: string | null;
   contentId?: string | null;
-  result?: "success" | "error";
+  result?: "success" | "error" | "rejected";
   errorMessage?: string | null;
   previousValues?: Record<string, unknown> | null;
   newValues?: Record<string, unknown> | null;
