@@ -1,0 +1,41 @@
+// MCP server entrypoint. The Vite plugin (`mcpPlugin()` in vite.config.ts)
+// reads this default export at build time and emits the TanStack routes for
+// the MCP protocol endpoint, the REST tool-listing companions, and the
+// OAuth protected-resource metadata document.
+//
+// Auth: tokens are verified against this project's own Supabase Auth
+// instance acting as an OAuth 2.1 authorization server (RFC 9728). Every
+// tool call still goes through the caller's RLS-scoped Supabase client
+// (see src/lib/mcp/supabase.ts) — the OAuth layer only establishes *who*
+// is calling; row-level security and the capability/permission checks in
+// src/lib/services decide *what* they can do.
+import { auth, defineMcp } from "@lovable.dev/mcp-js";
+import { supabaseProjectUrl } from "./supabase";
+
+import createContent from "./tools/create-content";
+import getContent from "./tools/get-content";
+import publishContent from "./tools/publish-content";
+import searchContent from "./tools/search-content";
+import updateContent from "./tools/update-content";
+
+export default defineMcp({
+  name: "al-mansouri-memory",
+  version: "1.0.0",
+  title: "ذاكرة المناصير",
+  instructions:
+    "أدوات القراءة والكتابة على محتوى منصة «ذاكرة المناصير» (مقالات، أحداث تاريخية، مواقع، شخصيات، أرشيف، وثائق، إعلانات) — بمصادقة OAuth ونطاق RLS على مستوى المستخدم. استخدم search_content وget_content للقراءة، وcreate_content/update_content لتحرير المسودات (لا تُنشر تلقائيًا أبدًا)، وpublish_content للنشر (مقصورة على عميل لوحة الإدارة الداخلية).",
+  auth: auth.oauth.issuer({
+    // This project's Supabase Auth instance is the OAuth 2.1 issuer.
+    // Its JWKS/discovery documents live at the standard well-known paths
+    // under the same origin, so no separate jwksUri is needed.
+    issuer: `${supabaseProjectUrl()}/auth/v1`,
+    resource: "al-mansouri-memory-mcp",
+  }),
+  tools: [
+    createContent,
+    getContent,
+    publishContent,
+    searchContent,
+    updateContent,
+  ] as unknown as Parameters<typeof defineMcp>[0]["tools"],
+});

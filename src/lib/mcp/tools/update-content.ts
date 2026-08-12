@@ -35,7 +35,9 @@ export default defineTool({
       );
     }
     try {
-      return ok({ updated: await updateContent(actor, input.type, input.id, values, "update_content") });
+      return ok({
+        updated: await updateContent(actor, input.type, input.id, values, "update_content"),
+      });
     } catch (error) {
       if (error instanceof ServiceError) throw new ToolError(error.message);
       throw new ToolError(`فشل التعديل: ${(error as Error).message}`);

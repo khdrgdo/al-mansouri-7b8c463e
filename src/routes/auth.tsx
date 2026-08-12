@@ -1,5 +1,11 @@
+// Sign-in only. There is deliberately no public self-registration here: per
+// the project's own design, only the admin/editor team needs an account —
+// visitors browse, comment, and contribute without one. Accounts for staff
+// are provisioned directly (Supabase Dashboard or `user_roles` insert by an
+// existing admin), not through a public signup form.
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout, PageHeader } from "@/components/site/SiteLayout";
@@ -7,7 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+const authSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => authSearchSchema.parse(search),
   head: () => ({
     meta: [
       { title: "دخول الإدارة | ذاكرة المناصير" },
@@ -22,30 +33,20 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   async function submit() {
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
-        });
-        if (error) throw error;
-        toast.success("تم إنشاء الحساب. يمكنك الدخول الآن.");
-        setMode("signin");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate({ to: "/admin" });
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- destination is a runtime path, not a typed route
+      navigate({ to: (redirect && redirect.startsWith("/") ? redirect : "/admin") as any });
     } catch (e) {
-      toast.error((e as Error).message || "تعذّر تنفيذ العملية.");
+      toast.error((e as Error).message || "تعذّر تسجيل الدخول.");
     } finally {
       setBusy(false);
     }
@@ -77,19 +78,12 @@ function AuthPage() {
               dir="ltr"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              autoComplete="current-password"
             />
           </div>
           <Button onClick={submit} disabled={busy}>
-            {busy ? "جارٍ…" : mode === "signin" ? "تسجيل الدخول" : "إنشاء حساب الإدارة"}
+            {busy ? "جارٍ…" : "تسجيل الدخول"}
           </Button>
-          <button
-            type="button"
-            className="text-sm text-muted-foreground hover:text-primary"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          >
-            {mode === "signin" ? "إنشاء حساب الإدارة لأول مرة" : "لدي حساب — تسجيل الدخول"}
-          </button>
         </div>
       </div>
     </SiteLayout>

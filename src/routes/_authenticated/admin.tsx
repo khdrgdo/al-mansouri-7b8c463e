@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -59,6 +60,45 @@ function AdminPage() {
     },
   });
 
+  const capabilities = useQuery({
+    queryKey: ["admin", "mcp_capabilities"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("mcp_capabilities")
+        .select("key, label, enabled, sort_order")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const auditLog = useQuery({
+    queryKey: ["admin", "audit_logs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("audit_logs")
+        .select(
+          "id, actor_email, actor_client, tool_name, action, content_type, result, error_message, created_at",
+        )
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const toggleCapability = useMutation({
+    mutationFn: async ({ key, enabled }: { key: string; enabled: boolean }) => {
+      const { error } = await supabase.from("mcp_capabilities").update({ enabled }).eq("key", key);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("تم تحديث صلاحية MCP.");
+      qc.invalidateQueries({ queryKey: ["admin", "mcp_capabilities"] });
+    },
+    onError: (e: Error) => toast.error(e.message || "تعذّر التحديث — تأكد من صلاحيات حسابك."),
+  });
+
   const setStatus = useMutation({
     mutationFn: async ({
       table,
@@ -93,7 +133,11 @@ function AdminPage() {
           <h1 className="text-lg font-bold">لوحة الإدارة</h1>
           <div className="flex items-center gap-2">
             <Link to="/">
-              <Button variant="outline" size="sm" className="border-nile-foreground/40 bg-transparent text-nile-foreground hover:bg-nile-foreground/10">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-nile-foreground/40 bg-transparent text-nile-foreground hover:bg-nile-foreground/10"
+              >
                 الموقع
               </Button>
             </Link>
@@ -110,6 +154,7 @@ function AdminPage() {
             <TabsTrigger value="comments">التعليقات</TabsTrigger>
             <TabsTrigger value="submissions">المساهمات</TabsTrigger>
             <TabsTrigger value="ads">الإعلانات</TabsTrigger>
+            <TabsTrigger value="mcp">MCP</TabsTrigger>
           </TabsList>
 
           <TabsContent value="comments" className="mt-6 grid gap-3">
@@ -119,8 +164,12 @@ function AdminPage() {
                 title={c.author_name}
                 subtitle={c.body}
                 status={c.status}
-                onApprove={() => setStatus.mutate({ table: "comments", id: c.id, status: "approved" })}
-                onReject={() => setStatus.mutate({ table: "comments", id: c.id, status: "rejected" })}
+                onApprove={() =>
+                  setStatus.mutate({ table: "comments", id: c.id, status: "approved" })
+                }
+                onReject={() =>
+                  setStatus.mutate({ table: "comments", id: c.id, status: "rejected" })
+                }
               />
             ))}
           </TabsContent>
@@ -132,8 +181,12 @@ function AdminPage() {
                 title={`${s.title} — ${s.contributor_name}`}
                 subtitle={s.description}
                 status={s.status}
-                onApprove={() => setStatus.mutate({ table: "submissions", id: s.id, status: "approved" })}
-                onReject={() => setStatus.mutate({ table: "submissions", id: s.id, status: "rejected" })}
+                onApprove={() =>
+                  setStatus.mutate({ table: "submissions", id: s.id, status: "approved" })
+                }
+                onReject={() =>
+                  setStatus.mutate({ table: "submissions", id: s.id, status: "rejected" })
+                }
               />
             ))}
           </TabsContent>
@@ -145,10 +198,79 @@ function AdminPage() {
                 title={`${a.title} — ${a.advertiser_name}`}
                 subtitle={a.description}
                 status={a.status}
-                onApprove={() => setStatus.mutate({ table: "advertisements", id: a.id, status: "approved" })}
-                onReject={() => setStatus.mutate({ table: "advertisements", id: a.id, status: "rejected" })}
+                onApprove={() =>
+                  setStatus.mutate({ table: "advertisements", id: a.id, status: "approved" })
+                }
+                onReject={() =>
+                  setStatus.mutate({ table: "advertisements", id: a.id, status: "rejected" })
+                }
               />
             ))}
+          </TabsContent>
+          <TabsContent value="mcp" className="mt-6 grid gap-8">
+            <section>
+              <h2 className="mb-3 text-sm font-semibold text-foreground">قدرات MCP</h2>
+              <p className="mb-3 text-xs text-muted-foreground">
+                التحكم بما يُسمح لعملاء MCP (مثل Claude) فعله على المحتوى. التعطيل هنا يمنع القدرة
+                فورًا لكل العملاء، بصرف النظر عن دورهم.
+              </p>
+              <div className="grid gap-2">
+                {(capabilities.data ?? []).map((c) => (
+                  <div
+                    key={c.key}
+                    className="flex items-center justify-between rounded-lg border border-border bg-card p-3"
+                  >
+                    <span className="text-sm text-foreground">{c.label}</span>
+                    <Switch
+                      checked={c.enabled}
+                      onCheckedChange={(checked) =>
+                        toggleCapability.mutate({ key: c.key, enabled: checked })
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="mb-3 text-sm font-semibold text-foreground">
+                سجل التدقيق (آخر 50 عملية)
+              </h2>
+              <div className="grid gap-2">
+                {(auditLog.data ?? []).map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="rounded-lg border border-border bg-card p-3 text-sm"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-medium text-foreground">
+                        {entry.tool_name} — {entry.action}
+                      </span>
+                      <span
+                        className={
+                          entry.result === "success"
+                            ? "rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
+                            : "rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive"
+                        }
+                      >
+                        {entry.result}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {entry.actor_email ?? "غير معروف"}
+                      {entry.content_type ? ` · ${entry.content_type}` : ""} ·{" "}
+                      {new Date(entry.created_at).toLocaleString("ar")}
+                    </p>
+                    {entry.error_message ? (
+                      <p className="mt-1 text-xs text-destructive">{entry.error_message}</p>
+                    ) : null}
+                  </div>
+                ))}
+                {auditLog.data && auditLog.data.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">لا توجد عمليات مسجّلة بعد.</p>
+                ) : null}
+              </div>
+            </section>
           </TabsContent>
         </Tabs>
       </main>

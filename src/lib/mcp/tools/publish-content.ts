@@ -22,6 +22,8 @@ export default defineTool({
   handler: async (input, ctx) =>
     runTool(ctx, "publish_content", async (actor) => {
       await requireInternalAdminClient(actor, "publish_content");
-      return { result: await setPublished(actor, input.type, input.id, input.published, "publish_content") };
+      return {
+        result: await setPublished(actor, input.type, input.id, input.published, "publish_content"),
+      };
     }),
 });

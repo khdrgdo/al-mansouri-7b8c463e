@@ -31,10 +31,15 @@ export default defineTool({
           .from(cfg.table)
           .select(cfg.publicSelect)
           .ilike(titleCol, `%${input.query}%`)
-          .limit(input.limit) as unknown as PromiseLike<{ data: unknown[] | null; error: unknown }> &
+          .limit(input.limit) as unknown as PromiseLike<{
+          data: unknown[] | null;
+          error: unknown;
+        }> &
           Pick<Loose, "eq">;
-        if (input.published !== undefined && cfg.publishable) q = q.eq("published", input.published) as typeof q;
-        if (input.verification && cfg.requiresSource) q = q.eq("verification", input.verification) as typeof q;
+        if (input.published !== undefined && cfg.publishable)
+          q = q.eq("published", input.published) as typeof q;
+        if (input.verification && cfg.requiresSource)
+          q = q.eq("verification", input.verification) as typeof q;
         const { data, error } = await q;
         if (error) continue; // RLS may hide a table from this role — skip silently.
         for (const raw of data ?? []) {

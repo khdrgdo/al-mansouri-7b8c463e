@@ -6,12 +6,13 @@ import { runTool } from "../context";
 
 const TYPES = Object.keys(CONTENT) as [ContentType, ...ContentType[]];
 
-const RELATIONS: Partial<Record<ContentType, { table: string; column: string; label: string }[]>> = {
-  location: [
-    { table: "archive_items", column: "location_id", label: "archive_items" },
-    { table: "people", column: "location_id", label: "people" },
-  ],
-};
+const RELATIONS: Partial<Record<ContentType, { table: string; column: string; label: string }[]>> =
+  {
+    location: [
+      { table: "archive_items", column: "location_id", label: "archive_items" },
+      { table: "people", column: "location_id", label: "people" },
+    ],
+  };
 
 export default defineTool({
   name: "get_content",
