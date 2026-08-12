@@ -11,9 +11,26 @@ type RuntimeGlobals = typeof globalThis & {
   process?: { env?: Record<string, string | undefined> };
 };
 
+/**
+ * `import.meta.env` is Vite's build-time-injected object — a real object in
+ * the emitted bundle (not just textual substitution), so dynamic key access
+ * works, and unlike `process.env` it needs no runtime platform support.
+ * Checked first for exactly the reason src/integrations/supabase/client.ts
+ * does: on Cloudflare Workers (this project's deploy target), `process.env`
+ * is not guaranteed populated at module-evaluation time (Workers receive
+ * env via per-request bindings, not a global at cold start) — reading it
+ * eagerly at module scope, as this file's exports are (via defineMcp() in
+ * ./index.ts), previously risked crashing the entire server bundle before
+ * any request handler even ran.
+ */
+function importMetaEnv(name: string): string | undefined {
+  const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
+  return env?.[name];
+}
+
 export function runtimeEnv(name: string): string | undefined {
   const runtime = globalThis as RuntimeGlobals;
-  return runtime.Deno?.env?.get?.(name) ?? runtime.process?.env?.[name];
+  return importMetaEnv(name) ?? runtime.process?.env?.[name] ?? runtime.Deno?.env?.get?.(name);
 }
 
 function configuredEnv(names: readonly string[]): string | undefined {
