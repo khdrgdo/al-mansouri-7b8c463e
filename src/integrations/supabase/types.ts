@@ -753,36 +753,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mcp_auth_codes: {
-        Row: {
-          admin_user_id: string
-          code: string
-          code_challenge: string
-          created_at: string
-          expires_at: string
-          redirect_uri: string
-          used_at: string | null
-        }
-        Insert: {
-          admin_user_id: string
-          code: string
-          code_challenge: string
-          created_at?: string
-          expires_at: string
-          redirect_uri: string
-          used_at?: string | null
-        }
-        Update: {
-          admin_user_id?: string
-          code?: string
-          code_challenge?: string
-          created_at?: string
-          expires_at?: string
-          redirect_uri?: string
-          used_at?: string | null
-        }
-        Relationships: []
-      }
       mcp_capabilities: {
         Row: {
           enabled: boolean
@@ -804,27 +774,6 @@ export type Database = {
           label?: string
           sort_order?: number
           updated_at?: string
-        }
-        Relationships: []
-      }
-      mcp_refresh_tokens: {
-        Row: {
-          admin_user_id: string
-          created_at: string
-          revoked_at: string | null
-          token_hash: string
-        }
-        Insert: {
-          admin_user_id: string
-          created_at?: string
-          revoked_at?: string | null
-          token_hash: string
-        }
-        Update: {
-          admin_user_id?: string
-          created_at?: string
-          revoked_at?: string | null
-          token_hash?: string
         }
         Relationships: []
       }
