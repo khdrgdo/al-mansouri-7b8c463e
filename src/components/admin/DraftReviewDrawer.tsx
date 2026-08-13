@@ -153,11 +153,59 @@ export default function DraftReviewDrawer({ table, id, onClose }: { table: strin
             <Button size="sm" variant="outline" onClick={() => setShowReject(true)}>رفض المسودة</Button>
             <Button size="sm" variant="secondary" onClick={() => setPreviewMode((p) => !p)}>عرض معاينة</Button>
 
-            {/* Approve & Publish — handler intentionally left isolated for later wiring */}
-            <Button size="sm" className="ml-auto" onClick={() => {
-              // open confirmation UI — keep publish action isolated
-              toast.success("تم تحضير المسودة للنشر — تنفيذ النشر معزول حاليًا.");
-            }}>
+            {/* Approve & Publish — invokes canonical MCP publish_content tool */}
+            <Button
+              size="sm"
+              className="ml-auto"
+              onClick={async () => {
+                // confirmation
+                if (!confirm("هل أنت متأكد من اعتماد ونشر هذه المسودة؟")) return;
+
+                // Map table -> MCP content type
+                const map: Record<string, string> = {
+                  articles: "article",
+                  historical_events: "historical_event",
+                  locations: "location",
+                  people: "person",
+                  archive_items: "archive_item",
+                  documents: "document",
+                };
+                const mcpType = map[table];
+                if (!mcpType) {
+                  toast.error("نوع المحتوى غير مدعوم للنشر.");
+                  return;
+                }
+
+                try {
+                  const resp = await fetch("/.mcp/invoke-tool/publish_content", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ input: { type: mcpType, id, published: true } }),
+                  });
+
+                  const json = await resp.json().catch(() => null);
+                  if (!resp.ok) {
+                    const message = json?.message || json?.error || resp.statusText || "خطأ غير معروف";
+                    toast.error(`تعذّر نشر المسودة: ${message}`);
+                    return;
+                  }
+
+                  // MCP returns tool result structure — treat non-OK tool responses as errors
+                  if (json && json.error) {
+                    toast.error(`تعذّر نشر المسودة: ${json.error}`);
+                    return;
+                  }
+
+                  // Success
+                  toast.success("تم نشر المسودة وأصبحت ظاهرة في الموقع العام.");
+                  qc.invalidateQueries({ queryKey: ["admin", "drafts_v2"] });
+                  qc.invalidateQueries({ queryKey: ["admin", "draft", table, id] });
+                  onClose();
+                } catch (err: any) {
+                  toast.error(`تعذّر نشر المسودة: ${err?.message ?? String(err)}`);
+                }
+              }}
+            >
               اعتماد ونشر
             </Button>
           </div>
