@@ -5,7 +5,7 @@ import { ToolError, type ToolContext } from "@lovable.dev/mcp-js";
 import { resolveActor } from "@/lib/services/permissions";
 import { recordAudit } from "@/lib/services/audit";
 import { ServiceError, type Actor } from "@/lib/services/types";
-import { runtimeEnv, supabaseForUser } from "./supabase";
+import { supabaseForUser } from "./supabase";
 
 export type ToolResult = {
   content: { type: "text"; text: string }[];
@@ -34,29 +34,6 @@ export async function getActor(ctx: ToolContext): Promise<Actor> {
     email,
     clientId: ctx.getClientId(),
   });
-}
-
-/**
- * Publishing tools (publish_content, publish_batch, rollback_last_publish_batch)
- * are restricted to the registered *internal admin dashboard* OAuth client.
- * Any other OAuth client — including general-purpose external AI clients — is
- * rejected even when the signed-in user is an admin. The allowed client id is
- * configured in the `MCP_INTERNAL_CLIENT_ID` secret.
- */
-export async function requireInternalAdminClient(actor: Actor, toolName: string): Promise<void> {
-  const allowed = runtimeEnv("MCP_INTERNAL_CLIENT_ID")?.trim();
-  const clientId = actor.clientId?.trim();
-  if (!allowed || !clientId || clientId !== allowed) {
-    await recordAudit(actor, {
-      toolName,
-      action: "client_denied",
-      result: "rejected",
-      errorMessage: `client_id=${clientId ?? "unknown"}`,
-    });
-    throw new ToolError(
-      "أدوات النشر مقصورة على عميل «لوحة الإدارة الداخلية» المسجَّل فقط. هذا العميل غير مصرّح له بالنشر حتى لو كان الحساب مشرفًا.",
-    );
-  }
 }
 
 const CODE_PREFIX: Record<ServiceError["code"], string> = {

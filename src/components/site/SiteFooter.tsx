@@ -7,6 +7,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-3">
         <div>
           <h2 className="text-xl font-bold">ذاكرة المناصير</h2>
+          <p className="mt-2 text-sm font-semibold text-gold">منصوري موقد ناارنا</p>
           <p className="mt-3 max-w-sm text-sm leading-7 text-nile-foreground/80">
             منصة رقمية لحفظ التاريخ والتراث والذاكرة.
           </p>

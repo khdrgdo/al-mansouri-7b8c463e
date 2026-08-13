@@ -23,7 +23,7 @@ export default defineMcp({
   version: "1.0.0",
   title: "ذاكرة المناصير",
   instructions:
-    "أدوات القراءة والكتابة على محتوى منصة «ذاكرة المناصير» (مقالات، أحداث تاريخية، مواقع، شخصيات، أرشيف، وثائق، إعلانات) — بمصادقة OAuth ونطاق RLS على مستوى المستخدم. استخدم search_content وget_content للقراءة، وcreate_content/update_content لتحرير المسودات (لا تُنشر تلقائيًا أبدًا)، وpublish_content للنشر (مقصورة على عميل لوحة الإدارة الداخلية).",
+    "أدوات القراءة والكتابة على محتوى منصة «ذاكرة المناصير» (مقالات، أحداث تاريخية، مواقع، شخصيات، أرشيف، وثائق، إعلانات) — بمصادقة OAuth ونطاق RLS على مستوى المستخدم. استخدم search_content وget_content للقراءة، وcreate_content/update_content لتحرير المسودات، ثم publish_content لنشرها وإظهارها في الموقع العام. النشر متاح للحسابات ذات دور admin فقط عندما تكون قدرة publish مفعّلة.",
   auth: auth.oauth.issuer({
     // This project's Supabase Auth instance is the OAuth 2.1 issuer.
     // Its JWKS/discovery documents live at the standard well-known paths
