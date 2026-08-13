@@ -1,3 +1,5 @@
+diff --git a/src/routes/_authenticated/admin.tsx b/src/routes/_authenticated/admin.tsx
+index f0df294..0000000 100644
 --- a/src/routes/_authenticated/admin.tsx
 +++ b/src/routes/_authenticated/admin.tsx
 @@
@@ -44,3 +46,7 @@
 +          <TabsContent value="drafts" className="mt-6">
 +            <DraftsList />
 +          </TabsContent>
+@@
+ function Row({
+@@
+ }
