@@ -30,9 +30,9 @@ import { Route as HistoryIndexRouteImport } from './routes/history.index'
 import { Route as HistorySlugRouteImport } from './routes/history.$slug'
 import { Route as LocationsIndexRouteImport } from './routes/locations.index'
 import { Route as LocationsSlugRouteImport } from './routes/locations.$slug'
-import { Route as OauthConsentRouteImport } from './routes/oauth.consent'
 import { Route as PeopleIndexRouteImport } from './routes/people.index'
 import { Route as PeopleSlugRouteImport } from './routes/people.$slug'
+import { Route as Char91DotlovableChar93OauthConsentRouteImport } from './routes/[.lovable]/oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const IndexRoute = IndexRouteImport.update({
@@ -141,11 +141,6 @@ const LocationsSlugRoute = LocationsSlugRouteImport.update({
   path: '/locations/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OauthConsentRoute = OauthConsentRouteImport.update({
-  id: '/oauth/consent',
-  path: '/oauth/consent',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PeopleIndexRoute = PeopleIndexRouteImport.update({
   id: '/people/',
   path: '/people/',
@@ -156,6 +151,12 @@ const PeopleSlugRoute = PeopleSlugRouteImport.update({
   path: '/people/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotlovableChar93OauthConsentRoute =
+  Char91DotlovableChar93OauthConsentRouteImport.update({
+    id: '/.lovable/oauth/consent',
+    path: '/.lovable/oauth/consent',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -181,12 +182,12 @@ export interface FileRoutesByFullPath {
   '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
-  '/oauth/consent': typeof OauthConsentRoute
   '/people/$slug': typeof PeopleSlugRoute
   '/articles/': typeof ArticlesIndexRoute
   '/history/': typeof HistoryIndexRoute
   '/locations/': typeof LocationsIndexRoute
   '/people/': typeof PeopleIndexRoute
+  '/.lovable/oauth/consent': typeof Char91DotlovableChar93OauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesByTo {
@@ -207,12 +208,12 @@ export interface FileRoutesByTo {
   '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
-  '/oauth/consent': typeof OauthConsentRoute
   '/people/$slug': typeof PeopleSlugRoute
   '/articles': typeof ArticlesIndexRoute
   '/history': typeof HistoryIndexRoute
   '/locations': typeof LocationsIndexRoute
   '/people': typeof PeopleIndexRoute
+  '/.lovable/oauth/consent': typeof Char91DotlovableChar93OauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesById {
@@ -235,12 +236,12 @@ export interface FileRoutesById {
   '/articles/$slug': typeof ArticlesSlugRoute
   '/history/$slug': typeof HistorySlugRoute
   '/locations/$slug': typeof LocationsSlugRoute
-  '/oauth/consent': typeof OauthConsentRoute
   '/people/$slug': typeof PeopleSlugRoute
   '/articles/': typeof ArticlesIndexRoute
   '/history/': typeof HistoryIndexRoute
   '/locations/': typeof LocationsIndexRoute
   '/people/': typeof PeopleIndexRoute
+  '/.lovable/oauth/consent': typeof Char91DotlovableChar93OauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRouteTypes {
@@ -263,12 +264,12 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/history/$slug'
     | '/locations/$slug'
-    | '/oauth/consent'
     | '/people/$slug'
     | '/articles/'
     | '/history/'
     | '/locations/'
     | '/people/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -289,12 +290,12 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/history/$slug'
     | '/locations/$slug'
-    | '/oauth/consent'
     | '/people/$slug'
     | '/articles'
     | '/history'
     | '/locations'
     | '/people'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
   id:
     | '__root__'
@@ -316,12 +317,12 @@ export interface FileRouteTypes {
     | '/articles/$slug'
     | '/history/$slug'
     | '/locations/$slug'
-    | '/oauth/consent'
     | '/people/$slug'
     | '/articles/'
     | '/history/'
     | '/locations/'
     | '/people/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
 }
@@ -343,12 +344,12 @@ export interface RootRouteChildren {
   ArticlesSlugRoute: typeof ArticlesSlugRoute
   HistorySlugRoute: typeof HistorySlugRoute
   LocationsSlugRoute: typeof LocationsSlugRoute
-  OauthConsentRoute: typeof OauthConsentRoute
   PeopleSlugRoute: typeof PeopleSlugRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
   HistoryIndexRoute: typeof HistoryIndexRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   PeopleIndexRoute: typeof PeopleIndexRoute
+  Char91DotlovableChar93OauthConsentRoute: typeof Char91DotlovableChar93OauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
@@ -501,13 +502,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocationsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/oauth/consent': {
-      id: '/oauth/consent'
-      path: '/oauth/consent'
-      fullPath: '/oauth/consent'
-      preLoaderRoute: typeof OauthConsentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/people/': {
       id: '/people/'
       path: '/people'
@@ -520,6 +514,13 @@ declare module '@tanstack/react-router' {
       path: '/people/$slug'
       fullPath: '/people/$slug'
       preLoaderRoute: typeof PeopleSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof Char91DotlovableChar93OauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -562,12 +563,13 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesSlugRoute: ArticlesSlugRoute,
   HistorySlugRoute: HistorySlugRoute,
   LocationsSlugRoute: LocationsSlugRoute,
-  OauthConsentRoute: OauthConsentRoute,
   PeopleSlugRoute: PeopleSlugRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
   HistoryIndexRoute: HistoryIndexRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   PeopleIndexRoute: PeopleIndexRoute,
+  Char91DotlovableChar93OauthConsentRoute:
+    Char91DotlovableChar93OauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport

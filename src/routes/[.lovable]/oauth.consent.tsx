@@ -1,15 +1,13 @@
-// Consent screen for Supabase Auth's OAuth 2.1 server. Supabase does not
-// host this UI itself — after `/oauth/authorize`, it redirects the browser
-// to this app's own "authorization path" with `?authorization_id=...`, and
-// this page is responsible for showing the requesting client + scopes and
-// recording the user's decision.
+// Consent screen for Supabase Auth's OAuth 2.1 server (already enabled for
+// this project — confirmed directly via Lovable Cloud, which manages this
+// Supabase Auth provider setting; it isn't exposed in the Cloud UI itself).
+// Supabase does not host this UI itself — after `/oauth/authorize`, it
+// redirects the browser to this app's own "Authorization Path" with
+// `?authorization_id=...`, and this page shows the requesting client +
+// scopes and records the user's decision.
 //
-// IMPORTANT: the path this file serves (`/oauth/consent`, matching Supabase's
-// documented default Authorization Path) must match whatever Authorization
-// Path is actually configured for this project in Supabase Dashboard →
-// Authentication → OAuth Server. If that setting has been customized (or is
-// unset due to the dashboard field being unavailable on some hosted
-// projects), update the path here — or the redirect — to match.
+// The Authorization Path is `/.lovable/oauth/consent` for this project
+// (confirmed directly, not assumed) — hence the [.lovable] directory.
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -21,7 +19,7 @@ const consentSearchSchema = z.object({
   authorization_id: z.string().optional(),
 });
 
-export const Route = createFileRoute("/oauth/consent")({
+export const Route = createFileRoute("/.lovable/oauth/consent")({
   validateSearch: (search: Record<string, unknown>) => consentSearchSchema.parse(search),
   head: () => ({
     meta: [{ title: "طلب صلاحية وصول | ذاكرة المناصير" }, { name: "robots", content: "noindex" }],
@@ -59,7 +57,7 @@ function ConsentPage() {
       if (!userData.user) {
         navigate({
           to: "/auth",
-          search: { redirect: `/oauth/consent?authorization_id=${authorization_id}` },
+          search: { redirect: `/.lovable/oauth/consent?authorization_id=${authorization_id}` },
           replace: true,
         });
         return;
