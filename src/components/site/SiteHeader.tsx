@@ -14,7 +14,14 @@ export function SiteHeader() {
           <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground">
             <span className="text-sm font-bold">ذم</span>
           </span>
-          <span className="text-lg font-bold text-foreground">ذاكرة المناصير</span>
+          <span className="min-w-0">
+            <span className="block text-base font-bold leading-tight text-foreground sm:text-lg">
+              ذاكرة المناصير
+            </span>
+            <span className="block text-[10px] font-medium leading-tight text-gold-foreground sm:text-xs">
+              منصوري موقد ناارنا
+            </span>
+          </span>
         </Link>
 
         <nav className="mr-auto hidden items-center gap-1 lg:flex">

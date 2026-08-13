@@ -31,7 +31,7 @@ export default defineTool({
         errorMessage: "محاولة تعديل حقل published عبر update_content",
       });
       throw new ToolError(
-        "لا يمكن تعديل حالة النشر (published) عبر update_content. استخدم أداة publish_content أو publish_batch — وهما مقصورتان على لوحة الإدارة الداخلية ودور المشرف.",
+        "لا يمكن تعديل حالة النشر (published) عبر update_content. استخدم أداة publish_content بحساب مشرف، أو publish_batch عند توفرها.",
       );
     }
     try {

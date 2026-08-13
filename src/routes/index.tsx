@@ -42,7 +42,7 @@ function HomePage() {
         <div className="absolute inset-0 bg-paper opacity-40" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 py-20 md:py-28">
           <p className="mb-4 text-sm font-medium tracking-wide text-gold">
-            منصة رقمية لحفظ الذاكرة الجمعية
+            منصوري موقد ناارنا
           </p>
           <h1 className="max-w-3xl text-4xl font-bold leading-tight text-balance md:text-5xl">
             ذاكرة المناصير: التاريخ، الأرض، الناس

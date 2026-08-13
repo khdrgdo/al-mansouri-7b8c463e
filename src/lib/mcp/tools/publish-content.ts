@@ -1,7 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 import { CONTENT, setPublished, type ContentType } from "@/lib/services/content-service";
-import { runTool, requireInternalAdminClient } from "../context";
+import { runTool } from "../context";
 
 const TYPES = Object.keys(CONTENT).filter((t) => CONTENT[t as ContentType].publishable) as [
   ContentType,
@@ -12,7 +12,7 @@ export default defineTool({
   name: "publish_content",
   title: "نشر عنصر",
   description:
-    "نشر (أو إلغاء نشر) عنصر واحد. مقصور على دور المشرف، ومفتاح القدرة «publish»، وعلى عميل لوحة الإدارة الداخلية المسجَّل فقط.",
+    "نشر (أو إلغاء نشر) عنصر واحد ليظهر في الموقع العام. متاح لأي عميل MCP مصادق عندما يكون الحساب بدور المشرف وتكون قدرة «publish» مفعّلة.",
   inputSchema: {
     type: z.enum(TYPES),
     id: z.string().uuid(),
@@ -21,7 +21,6 @@ export default defineTool({
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   handler: async (input, ctx) =>
     runTool(ctx, "publish_content", async (actor) => {
-      await requireInternalAdminClient(actor, "publish_content");
       return {
         result: await setPublished(actor, input.type, input.id, input.published, "publish_content"),
       };
