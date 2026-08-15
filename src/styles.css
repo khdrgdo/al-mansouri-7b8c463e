@@ -5,18 +5,20 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * ذاكرة المناصير — design system
- * Nile green / sand / ivory / charcoal / muted gold. All colors in oklch.
+ * ذاكرة المناصير — أرشيف رقمي
+ * Design system: paper ivory, stone/ink, sand, single ochre accent.
+ * All colors in oklch. Editorial, contemporary, RTL-first.
  */
 
 @theme inline {
   --font-sans: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
+  --font-display: "Noto Kufi Arabic", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-3xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -43,6 +45,8 @@
   --color-gold-foreground: var(--gold-foreground);
   --color-nile: var(--nile);
   --color-nile-foreground: var(--nile-foreground);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -59,86 +63,95 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.978 0.012 88);
-  --foreground: oklch(0.24 0.014 70);
-  --card: oklch(0.992 0.006 90);
-  --card-foreground: oklch(0.24 0.014 70);
-  --popover: oklch(0.992 0.006 90);
-  --popover-foreground: oklch(0.24 0.014 70);
-  --primary: oklch(0.38 0.062 166);
-  --primary-foreground: oklch(0.98 0.01 90);
-  --secondary: oklch(0.915 0.026 82);
-  --secondary-foreground: oklch(0.3 0.018 70);
-  --muted: oklch(0.935 0.02 84);
-  --muted-foreground: oklch(0.48 0.02 72);
-  --accent: oklch(0.72 0.082 82);
-  --accent-foreground: oklch(0.24 0.02 70);
+  --radius: 0.25rem;
+  --background: oklch(0.968 0.008 85);
+  --foreground: oklch(0.205 0.006 60);
+  --card: oklch(0.985 0.005 85);
+  --card-foreground: oklch(0.205 0.006 60);
+  --popover: oklch(0.985 0.005 85);
+  --popover-foreground: oklch(0.205 0.006 60);
+  --primary: oklch(0.52 0.126 48);
+  --primary-foreground: oklch(0.985 0.006 85);
+  --secondary: oklch(0.928 0.012 82);
+  --secondary-foreground: oklch(0.26 0.008 60);
+  --muted: oklch(0.94 0.01 82);
+  --muted-foreground: oklch(0.485 0.012 68);
+  --accent: oklch(0.9 0.022 78);
+  --accent-foreground: oklch(0.24 0.008 60);
   --destructive: oklch(0.52 0.17 28);
   --destructive-foreground: oklch(0.98 0.01 90);
-  --border: oklch(0.878 0.022 82);
-  --input: oklch(0.878 0.022 82);
-  --ring: oklch(0.38 0.062 166);
-  --sand: oklch(0.9 0.035 80);
-  --sand-foreground: oklch(0.28 0.02 70);
-  --gold: oklch(0.72 0.082 82);
-  --gold-foreground: oklch(0.24 0.02 70);
-  --nile: oklch(0.32 0.055 168);
-  --nile-foreground: oklch(0.97 0.012 90);
-  --chart-1: oklch(0.38 0.062 166);
-  --chart-2: oklch(0.72 0.082 82);
-  --chart-3: oklch(0.55 0.05 150);
-  --chart-4: oklch(0.62 0.06 60);
-  --chart-5: oklch(0.42 0.03 250);
-  --sidebar: oklch(0.28 0.03 165);
-  --sidebar-foreground: oklch(0.95 0.012 88);
-  --sidebar-primary: oklch(0.72 0.082 82);
-  --sidebar-primary-foreground: oklch(0.22 0.02 70);
-  --sidebar-accent: oklch(0.34 0.04 166);
-  --sidebar-accent-foreground: oklch(0.96 0.01 88);
-  --sidebar-border: oklch(0.38 0.04 166);
-  --sidebar-ring: oklch(0.72 0.082 82);
+  --border: oklch(0.885 0.012 82);
+  --input: oklch(0.885 0.012 82);
+  --ring: oklch(0.52 0.126 48);
+  --sand: oklch(0.905 0.026 80);
+  --sand-foreground: oklch(0.26 0.01 65);
+  --gold: oklch(0.66 0.095 68);
+  --gold-foreground: oklch(0.22 0.01 60);
+  --ink: oklch(0.185 0.006 60);
+  --ink-foreground: oklch(0.955 0.008 85);
+  /* legacy token kept for existing components: now a deep stone-ink */
+  --nile: oklch(0.205 0.008 62);
+  --nile-foreground: oklch(0.955 0.008 85);
+  --chart-1: oklch(0.52 0.126 48);
+  --chart-2: oklch(0.66 0.095 68);
+  --chart-3: oklch(0.45 0.03 70);
+  --chart-4: oklch(0.62 0.05 60);
+  --chart-5: oklch(0.3 0.02 60);
+  --sidebar: oklch(0.205 0.008 62);
+  --sidebar-foreground: oklch(0.95 0.008 85);
+  --sidebar-primary: oklch(0.66 0.095 68);
+  --sidebar-primary-foreground: oklch(0.2 0.01 60);
+  --sidebar-accent: oklch(0.26 0.012 62);
+  --sidebar-accent-foreground: oklch(0.96 0.008 85);
+  --sidebar-border: oklch(0.3 0.012 62);
+  --sidebar-ring: oklch(0.66 0.095 68);
 }
 
 .dark {
-  --background: oklch(0.19 0.014 160);
-  --foreground: oklch(0.95 0.012 88);
-  --card: oklch(0.23 0.018 162);
-  --card-foreground: oklch(0.95 0.012 88);
-  --popover: oklch(0.23 0.018 162);
-  --popover-foreground: oklch(0.95 0.012 88);
-  --primary: oklch(0.72 0.082 82);
-  --primary-foreground: oklch(0.2 0.02 70);
-  --secondary: oklch(0.29 0.022 162);
-  --secondary-foreground: oklch(0.95 0.012 88);
-  --muted: oklch(0.29 0.022 162);
-  --muted-foreground: oklch(0.72 0.02 84);
-  --accent: oklch(0.34 0.03 164);
-  --accent-foreground: oklch(0.95 0.012 88);
+  --background: oklch(0.17 0.006 60);
+  --foreground: oklch(0.95 0.008 85);
+  --card: oklch(0.21 0.008 62);
+  --card-foreground: oklch(0.95 0.008 85);
+  --popover: oklch(0.21 0.008 62);
+  --popover-foreground: oklch(0.95 0.008 85);
+  --primary: oklch(0.68 0.11 52);
+  --primary-foreground: oklch(0.18 0.008 60);
+  --secondary: oklch(0.26 0.01 62);
+  --secondary-foreground: oklch(0.95 0.008 85);
+  --muted: oklch(0.26 0.01 62);
+  --muted-foreground: oklch(0.73 0.012 80);
+  --accent: oklch(0.3 0.014 64);
+  --accent-foreground: oklch(0.95 0.008 85);
   --destructive: oklch(0.6 0.16 28);
   --destructive-foreground: oklch(0.98 0.01 90);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.72 0.082 82);
-  --sand: oklch(0.35 0.03 90);
-  --sand-foreground: oklch(0.95 0.012 88);
-  --gold: oklch(0.72 0.082 82);
-  --gold-foreground: oklch(0.2 0.02 70);
-  --nile: oklch(0.28 0.04 166);
-  --nile-foreground: oklch(0.96 0.01 88);
-  --sidebar: oklch(0.22 0.02 164);
-  --sidebar-foreground: oklch(0.95 0.012 88);
-  --sidebar-primary: oklch(0.72 0.082 82);
-  --sidebar-primary-foreground: oklch(0.2 0.02 70);
-  --sidebar-accent: oklch(0.3 0.03 166);
-  --sidebar-accent-foreground: oklch(0.96 0.01 88);
+  --ring: oklch(0.68 0.11 52);
+  --sand: oklch(0.33 0.02 78);
+  --sand-foreground: oklch(0.95 0.008 85);
+  --gold: oklch(0.72 0.09 70);
+  --gold-foreground: oklch(0.18 0.008 60);
+  --ink: oklch(0.13 0.005 60);
+  --ink-foreground: oklch(0.95 0.008 85);
+  --nile: oklch(0.15 0.006 60);
+  --nile-foreground: oklch(0.95 0.008 85);
+  --sidebar: oklch(0.19 0.008 62);
+  --sidebar-foreground: oklch(0.95 0.008 85);
+  --sidebar-primary: oklch(0.72 0.09 70);
+  --sidebar-primary-foreground: oklch(0.18 0.008 60);
+  --sidebar-accent: oklch(0.27 0.012 64);
+  --sidebar-accent-foreground: oklch(0.96 0.008 85);
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.72 0.082 82);
+  --sidebar-ring: oklch(0.72 0.09 70);
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
@@ -152,8 +165,19 @@
   h2,
   h3,
   h4 {
+    font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
   }
 }
 
@@ -161,11 +185,111 @@
   text-wrap: balance;
 }
 
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+/* Editorial eyebrow: small caps-ish label with a rule */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+
+  &::before {
+    content: "";
+    width: 2rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+}
+
 /* Subtle paper/sand texture used behind hero and section bands */
 @utility bg-paper {
   background-image:
-    radial-gradient(circle at 20% 15%, color-mix(in oklab, var(--gold) 12%, transparent), transparent 55%),
-    radial-gradient(circle at 85% 85%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 60%);
+    radial-gradient(circle at 20% 15%, color-mix(in oklab, var(--gold) 10%, transparent), transparent 55%),
+    radial-gradient(circle at 85% 85%, color-mix(in oklab, var(--primary) 7%, transparent), transparent 60%);
+}
+
+/* Fine archival grain overlay */
+@utility grain {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--foreground) 22%, transparent) 0.5px,
+      transparent 0.5px
+    );
+    background-size: 3px 3px;
+  }
+}
+
+/* Hairline rule used to separate editorial blocks */
+@utility rule {
+  border-top: 1px solid var(--border);
+}
+
+/* Scroll reveal — driven by <Reveal /> setting data-visible */
+@utility reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal,
+  .reveal[data-visible="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Horizontal snap rail used on mobile compositions */
+@utility snap-rail {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > * {
+    scroll-snap-align: start;
+    flex: 0 0 78%;
+  }
 }
 
 /* Leaflet fixes for RTL layout */
