@@ -81,7 +81,7 @@ function AdminPage() {
           return {
             id: item.id,
             title: item.title ?? item.name ?? "مسودة بلا عنوان",
-            table: types[index],
+            table: types[index]!,
             created_at: item.created_at,
           };
         }),

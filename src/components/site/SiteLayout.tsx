@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
+import { Reveal } from "./Reveal";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   );
 }
 
+/** Editorial page masthead: oversized title, hairline rules, generous space. */
 export function PageHeader({
   title,
   description,
@@ -22,15 +24,19 @@ export function PageHeader({
   eyebrow?: string;
 }) {
   return (
-    <section className="border-b border-border bg-secondary/60 bg-paper">
-      <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
-        {eyebrow ? (
-          <p className="mb-3 text-sm font-medium tracking-wide text-primary">{eyebrow}</p>
-        ) : null}
-        <h1 className="text-3xl font-bold text-balance text-foreground md:text-4xl">{title}</h1>
-        {description ? (
-          <p className="mt-4 max-w-2xl text-base leading-8 text-muted-foreground">{description}</p>
-        ) : null}
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-[1400px] px-5 pb-12 pt-16 md:pb-20 md:pt-24 lg:px-10">
+        <Reveal>
+          {eyebrow ? <p className="eyebrow mb-6">{eyebrow}</p> : null}
+          <h1 className="max-w-4xl font-display text-4xl leading-[1.1] text-balance text-foreground md:text-6xl lg:text-7xl">
+            {title}
+          </h1>
+          {description ? (
+            <p className="mt-8 max-w-xl text-base leading-9 text-muted-foreground md:mr-auto">
+              {description}
+            </p>
+          ) : null}
+        </Reveal>
       </div>
     </section>
   );
@@ -38,10 +44,12 @@ export function PageHeader({
 
 export function EmptyState({ title, description }: { title: string; description?: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-14 text-center">
-      <p className="text-base font-semibold text-foreground">{title}</p>
+    <div className="border border-dashed border-border px-6 py-16 text-center">
+      <p className="font-display text-lg text-foreground">{title}</p>
       {description ? (
-        <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+          {description}
+        </p>
       ) : null}
     </div>
   );
@@ -51,7 +59,7 @@ export function LoadingGrid({ count = 6 }: { count?: number }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="h-56 animate-pulse rounded-lg border border-border bg-muted" />
+        <div key={i} className="h-56 animate-pulse bg-muted" />
       ))}
     </div>
   );
