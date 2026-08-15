@@ -22,8 +22,19 @@ function publicClient() {
 
 export const getHomeData = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const [locations, articles, images, documents, people, latestArticles, timeline] =
-    await Promise.all([
+  const [
+    locations,
+    articles,
+    images,
+    documents,
+    people,
+    latestArticles,
+    timeline,
+    featuredPeople,
+    featuredLocations,
+    featuredArchive,
+    sponsor,
+  ] = await Promise.all([
       sb.from("locations").select("id", { count: "exact", head: true }).eq("published", true),
       sb.from("articles").select("id", { count: "exact", head: true }).eq("published", true),
       sb
@@ -45,6 +56,31 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
         .eq("published", true)
         .order("sort_order", { ascending: true })
         .limit(4),
+      sb
+        .from("people")
+        .select("id, slug, name, role_title, biography, photo_url")
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .limit(4),
+      sb
+        .from("locations")
+        .select("id, slug, name, kind, latitude, longitude")
+        .eq("published", true)
+        .order("name")
+        .limit(8),
+      sb
+        .from("archive_items")
+        .select("id, slug, title, media_url, media_type, alt_text")
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .limit(5),
+      sb
+        .from("advertisements")
+        .select("id, advertiser_name, title, description, image_url, website, phone")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
   return {
@@ -57,6 +93,10 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
     },
     latestArticles: latestArticles.data ?? [],
     timeline: timeline.data ?? [],
+    featuredPeople: featuredPeople.data ?? [],
+    featuredLocations: featuredLocations.data ?? [],
+    featuredArchive: featuredArchive.data ?? [],
+    sponsor: sponsor.data ?? null,
   };
 });
 
