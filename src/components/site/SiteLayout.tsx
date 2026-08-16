@@ -115,10 +115,10 @@ export function ArrowLink({
   children,
   className,
   ...rest
-}: { children: ReactNode; className?: string } & Record<string, unknown>) {
+}: React.ComponentProps<typeof Link>) {
   return (
     <Link
-      {...(rest as never)}
+      {...rest}
       className={cn(
         "group inline-flex items-center gap-3 rounded-sm text-sm font-medium text-primary",
         className,
