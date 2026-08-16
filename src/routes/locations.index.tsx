@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { listLocations } from "@/lib/public.functions";
 import { SiteLayout, PageHeader, EmptyState } from "@/components/site/SiteLayout";
 import { MediaImage } from "@/components/site/MediaImage";
+import { Reveal } from "@/components/site/Reveal";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,9 +50,7 @@ function LocationsPage() {
     () =>
       locations.filter((l) => {
         const matchesQ =
-          !q.trim() ||
-          l.name.includes(q.trim()) ||
-          (l.description ?? "").includes(q.trim());
+          !q.trim() || l.name.includes(q.trim()) || (l.description ?? "").includes(q.trim());
         const matchesKind = !kind || l.kind === kind;
         return matchesQ && matchesKind;
       }),
@@ -66,7 +65,7 @@ function LocationsPage() {
         description="تصفّح المواقع حسب النوع أو ابحث بالاسم. كل موقع يحتوي على نبذته وصوره والمقالات والشخصيات المرتبطة به."
       />
 
-      <div className="mx-auto max-w-6xl px-4 py-12">
+      <div className="mx-auto max-w-[1400px] px-5 py-14 lg:px-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <Input
             value={q}
@@ -95,7 +94,7 @@ function LocationsPage() {
           </div>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-12">
           {filtered.length === 0 ? (
             <EmptyState
               title="لا توجد نتائج"
@@ -103,26 +102,38 @@ function LocationsPage() {
             />
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((l) => (
-                <Link
+              {filtered.map((l, i) => (
+                <Reveal
                   key={l.id}
-                  to="/locations/$slug"
-                  params={{ slug: l.slug }}
-                  className="overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-primary"
+                  delay={Math.min(i, 8) * 40}
+                  {...(i % 5 === 0 ? { className: "sm:col-span-2" } : {})}
                 >
-                  <MediaImage path={l.cover_image_url} alt={l.name} />
-                  <div className="p-5">
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-semibold text-foreground">{l.name}</h2>
-                      {l.kind ? <Badge variant="secondary">{l.kind}</Badge> : null}
+                  <Link
+                    to="/locations/$slug"
+                    params={{ slug: l.slug }}
+                    className="group block overflow-hidden"
+                  >
+                    <MediaImage
+                      path={l.cover_image_url}
+                      alt={l.name}
+                      ratio={i % 5 === 0 ? "aspect-[21/9]" : "aspect-[4/3]"}
+                      imgClassName="group-hover:scale-[1.04]"
+                    />
+                    <div className="pt-4">
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-display text-xl text-foreground transition-colors group-hover:text-primary">
+                          {l.name}
+                        </h2>
+                        {l.kind ? <Badge variant="secondary">{l.kind}</Badge> : null}
+                      </div>
+                      {l.description ? (
+                        <p className="mt-2 line-clamp-2 text-sm leading-7 text-muted-foreground">
+                          {l.description}
+                        </p>
+                      ) : null}
                     </div>
-                    {l.description ? (
-                      <p className="mt-2 line-clamp-3 text-sm leading-7 text-muted-foreground">
-                        {l.description}
-                      </p>
-                    ) : null}
-                  </div>
-                </Link>
+                  </Link>
+                </Reveal>
               ))}
             </div>
           )}

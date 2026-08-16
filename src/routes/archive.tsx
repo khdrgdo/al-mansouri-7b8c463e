@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { listArchive } from "@/lib/public.functions";
 import { SiteLayout, PageHeader, EmptyState } from "@/components/site/SiteLayout";
 import { MediaImage } from "@/components/site/MediaImage";
+import { Reveal } from "@/components/site/Reveal";
 import { CommentsSection } from "@/components/site/CommentsSection";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,8 @@ type ArchiveRow = {
   contributor: string | null;
 };
 type CategoryRow = { id: string; slug: string; name: string };
+
+const RATIOS = ["aspect-square", "aspect-[3/4]", "aspect-[4/5]", "aspect-square"];
 
 export const Route = createFileRoute("/archive")({
   head: () => ({
@@ -68,11 +71,11 @@ function ArchivePage() {
   return (
     <SiteLayout>
       <PageHeader
-        eyebrow="الأرشيف"
+        eyebrow="الذاكرة البصرية"
         title="الأرشيف الرقمي"
         description="صور قديمة ووثائق ومواد بصرية. اضغط على أي مادة لعرضها بالحجم الكامل مع بياناتها ومصدرها."
       />
-      <div className="mx-auto max-w-6xl px-4 py-12">
+      <div className="mx-auto max-w-[1400px] px-5 py-14 lg:px-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <Input
             value={q}
@@ -81,7 +84,11 @@ function ArchivePage() {
             className="md:max-w-sm"
           />
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant={cat === null ? "default" : "outline"} onClick={() => setCat(null)}>
+            <Button
+              size="sm"
+              variant={cat === null ? "default" : "outline"}
+              onClick={() => setCat(null)}
+            >
               الكل
             </Button>
             {categories.map((c) => (
@@ -97,24 +104,32 @@ function ArchivePage() {
           </div>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-12">
           {filtered.length === 0 ? (
             <EmptyState
               title="الأرشيف فارغ حاليًا"
               description="يمكنك المساهمة بصورك ووثائقك عبر صفحة المساهمات."
             />
           ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {filtered.map((i) => (
-                <button
-                  key={i.id}
-                  type="button"
-                  onClick={() => setActive(i)}
-                  className="overflow-hidden rounded-lg border border-border bg-card text-right transition-colors hover:border-primary"
-                >
-                  <MediaImage path={i.media_url} alt={i.alt_text || i.title} ratio="aspect-square" />
-                  <p className="p-3 text-sm font-medium text-foreground">{i.title}</p>
-                </button>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {filtered.map((i, idx) => (
+                <Reveal key={i.id} delay={Math.min(idx, 10) * 30}>
+                  <button
+                    type="button"
+                    onClick={() => setActive(i)}
+                    className="group block w-full overflow-hidden text-right"
+                  >
+                    <MediaImage
+                      path={i.media_url}
+                      alt={i.alt_text || i.title}
+                      ratio={RATIOS[idx % RATIOS.length]!}
+                      imgClassName="group-hover:scale-[1.05]"
+                    />
+                    <p className="mt-2 line-clamp-1 text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+                      {i.title}
+                    </p>
+                  </button>
+                </Reveal>
               ))}
             </div>
           )}
@@ -126,13 +141,12 @@ function ArchivePage() {
           {active ? (
             <>
               <DialogHeader className="text-right">
-                <DialogTitle>{active.title}</DialogTitle>
+                <DialogTitle className="font-display text-2xl">{active.title}</DialogTitle>
                 <DialogDescription>{active.caption || active.description || ""}</DialogDescription>
               </DialogHeader>
               <MediaImage
                 path={active.media_url}
                 alt={active.alt_text || active.title}
-                className="rounded-lg"
                 ratio="aspect-[4/3]"
               />
               <dl className="grid gap-2 text-sm text-muted-foreground">
