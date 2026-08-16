@@ -115,7 +115,10 @@ export function ArrowLink({
   children,
   className,
   ...rest
-}: React.ComponentProps<typeof Link>) {
+}: Omit<React.ComponentProps<typeof Link>, "children" | "className"> & {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <Link
       {...rest}
