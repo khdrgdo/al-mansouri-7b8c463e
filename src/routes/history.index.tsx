@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { listEvents } from "@/lib/public.functions";
-import { SiteLayout, PageHeader, EmptyState } from "@/components/site/SiteLayout";
+import { SiteLayout, PageHeader, EmptyState, Container } from "@/components/site/SiteLayout";
+import { MediaImage } from "@/components/site/MediaImage";
+import { Reveal } from "@/components/site/Reveal";
 import { VERIFICATION_LABELS } from "@/lib/constants";
-import { Badge } from "@/components/ui/badge";
 
 type EventRow = {
   id: string;
@@ -42,40 +43,58 @@ function HistoryPage() {
         description="محطات وأحداث مرتبة زمنيًا. كل محطة موسومة بدرجة التوثيق: موثّقة بمصدر، أو رواية شفهية، أو قيد التوثيق."
       />
 
-      <div className="mx-auto max-w-4xl px-4 py-14">
+      <Container className="py-14 md:py-20">
         {events.length === 0 ? (
           <EmptyState
             title="لم تُضف محطات تاريخية بعد"
             description="سيظهر الخط الزمني فور إضافة المحتوى الموثّق من قبل الإدارة."
           />
         ) : (
-          <ol className="relative border-r-2 border-border pr-6">
-            {events.map((e) => (
-              <li key={e.id} className="relative pb-10 last:pb-0">
-                <span className="absolute -right-[calc(1.5rem+7px)] top-2 h-3 w-3 rounded-full bg-primary ring-4 ring-background" />
-                <Link
-                  to="/history/$slug"
-                  params={{ slug: e.slug }}
-                  className="block rounded-lg border border-border bg-card p-6 transition-colors hover:border-primary"
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    {e.period ? (
-                      <span className="text-sm font-semibold text-primary">{e.period}</span>
-                    ) : null}
-                    <Badge variant="secondary">
-                      {VERIFICATION_LABELS[e.verification] ?? e.verification}
-                    </Badge>
-                  </div>
-                  <h2 className="mt-2 text-xl font-bold text-foreground">{e.title}</h2>
-                  {e.summary ? (
-                    <p className="mt-2 text-sm leading-8 text-muted-foreground">{e.summary}</p>
-                  ) : null}
-                </Link>
+          <ol className="rule border-t">
+            {events.map((e, i) => (
+              <li key={e.id} className="border-b border-border">
+                <Reveal delay={Math.min(i, 4) * 60}>
+                  <Link
+                    to="/history/$slug"
+                    params={{ slug: e.slug }}
+                    className="group grid items-start gap-6 rounded-sm py-8 md:grid-cols-12 md:gap-8 md:py-12"
+                  >
+                    <div className="md:col-span-2">
+                      <p className="font-display text-lg text-primary md:text-2xl">
+                        {e.period ?? "—"}
+                      </p>
+                      <p className="mt-2 text-[11px] tracking-[0.16em] text-muted-foreground">
+                        {VERIFICATION_LABELS[e.verification] ?? e.verification}
+                      </p>
+                    </div>
+
+                    <div className="md:col-span-6">
+                      <h2 className="font-display text-2xl leading-tight text-foreground transition-colors group-hover:text-primary md:text-4xl">
+                        {e.title}
+                      </h2>
+                      {e.summary ? (
+                        <p className="mt-4 max-w-xl text-sm leading-8 text-muted-foreground">
+                          {e.summary}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="md:col-span-3 md:col-start-10">
+                      <MediaImage
+                        path={e.cover_image_url}
+                        alt={e.title}
+                        ratio="aspect-[4/3]"
+                        position={i % 2 === 0 ? "50% 35%" : "50% 65%"}
+                        imgClassName="group-hover:scale-[1.04]"
+                      />
+                    </div>
+                  </Link>
+                </Reveal>
               </li>
             ))}
           </ol>
         )}
-      </div>
+      </Container>
     </SiteLayout>
   );
 }
