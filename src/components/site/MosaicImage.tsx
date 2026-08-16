@@ -41,9 +41,9 @@ export function MosaicImage({
       {fragments.map((f, i) => (
         <Reveal key={i} delay={i * 90} className={cn("min-w-0", f.className)}>
           <MediaImage
-            path={path}
+            path={path ?? null}
             alt={i === 0 ? alt : ""}
-            fallbackSrc={fallbackSrc}
+            {...(fallbackSrc ? { fallbackSrc } : {})}
             position={f.position}
             ratio={f.ratio ?? "aspect-[4/5]"}
             priority={priority && i === 0}
