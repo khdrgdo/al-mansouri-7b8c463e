@@ -50,11 +50,6 @@ export function SiteFooter() {
                   تواصل معنا
                 </Link>
               </li>
-              <li>
-                <Link to="/auth" className="text-ink-foreground/60 transition-colors hover:text-gold">
-                  إدارة الموقع
-                </Link>
-              </li>
             </ul>
           </nav>
         </div>
