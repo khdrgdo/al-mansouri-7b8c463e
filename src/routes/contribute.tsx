@@ -107,11 +107,15 @@ function ContributePage() {
         description="لا نضيف أي معلومة تاريخية دون مصدر أو إشارة واضحة إلى كونها رواية شفهية. ساعدنا بالمعلومة الصحيحة، ونحن نتكفّل بالمراجعة والنشر والنسب."
       />
 
-      <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-xl border border-border bg-card p-6 md:p-8">
+      <div className="mx-auto max-w-[1400px] px-5 py-14 lg:px-10">
+        <div className="mx-auto max-w-3xl border border-border p-6 md:p-10">
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="اسمك *">
-              <Input value={form.contributor_name} onChange={set("contributor_name")} maxLength={100} />
+              <Input
+                value={form.contributor_name}
+                onChange={set("contributor_name")}
+                maxLength={100}
+              />
             </Field>
             <Field label="وسيلة تواصل (هاتف أو بريد)">
               <Input value={form.contact} onChange={set("contact")} maxLength={120} />
@@ -146,7 +150,12 @@ function ContributePage() {
             </Field>
             <div className="md:col-span-2">
               <Field label="التفاصيل *">
-                <Textarea value={form.description} onChange={set("description")} rows={6} maxLength={4000} />
+                <Textarea
+                  value={form.description}
+                  onChange={set("description")}
+                  rows={6}
+                  maxLength={4000}
+                />
               </Field>
             </div>
             <div className="md:col-span-2">

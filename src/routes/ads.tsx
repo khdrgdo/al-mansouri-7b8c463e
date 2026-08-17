@@ -65,9 +65,13 @@ function AdsPage() {
         title="الإعلانات المحلية"
         description="مساحة لإعلانات أهل المنطقة وخدماتهم ومناسباتهم. تُنشر الإعلانات بعد مراجعة الإدارة."
       />
-      <div className="mx-auto max-w-6xl px-4 py-12">
+      <div className="mx-auto max-w-[1400px] px-5 py-14 lg:px-10">
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant={cat === null ? "default" : "outline"} onClick={() => setCat(null)}>
+          <Button
+            size="sm"
+            variant={cat === null ? "default" : "outline"}
+            onClick={() => setCat(null)}
+          >
             كل الأقسام
           </Button>
           {categories.map((c) => (
@@ -84,17 +88,27 @@ function AdsPage() {
 
         <div className="mt-10">
           {filtered.length === 0 ? (
-            <EmptyState title="لا توجد إعلانات معتمدة حاليًا" description="يمكنك إرسال إعلانك من النموذج أدناه." />
+            <EmptyState
+              title="لا توجد إعلانات معتمدة حاليًا"
+              description="يمكنك إرسال إعلانك من النموذج أدناه."
+            />
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((a) => (
-                <article key={a.id} className="overflow-hidden rounded-lg border border-border bg-card">
-                  <MediaImage path={a.image_url} alt={a.title} />
-                  <div className="p-5">
-                    <h2 className="text-lg font-semibold text-foreground">{a.title}</h2>
+                <article key={a.id} className="group">
+                  <MediaImage
+                    path={a.image_url}
+                    alt={a.title}
+                    ratio="aspect-[4/3]"
+                    imgClassName="group-hover:scale-[1.03]"
+                  />
+                  <div className="pt-4">
+                    <h2 className="font-display text-lg text-foreground">{a.title}</h2>
                     <p className="mt-1 text-sm text-primary">{a.advertiser_name}</p>
                     {a.description ? (
-                      <p className="mt-2 text-sm leading-7 text-muted-foreground">{a.description}</p>
+                      <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                        {a.description}
+                      </p>
                     ) : null}
                     <div className="mt-3 grid gap-1 text-sm text-muted-foreground">
                       {a.location_text ? <span>الموقع: {a.location_text}</span> : null}
@@ -205,7 +219,12 @@ function AdForm({ categories }: { categories: CategoryRow[] }) {
           <Input value={form.location_text} onChange={set("location_text")} maxLength={120} />
         </Field>
         <Field label="رابط إلكتروني">
-          <Input value={form.website} onChange={set("website")} maxLength={255} placeholder="https://" />
+          <Input
+            value={form.website}
+            onChange={set("website")}
+            maxLength={255}
+            placeholder="https://"
+          />
         </Field>
         <Field label="القسم">
           <select
@@ -230,7 +249,12 @@ function AdForm({ categories }: { categories: CategoryRow[] }) {
         </Field>
         <div className="md:col-span-2">
           <Field label="وصف الإعلان">
-            <Textarea value={form.description} onChange={set("description")} rows={4} maxLength={1200} />
+            <Textarea
+              value={form.description}
+              onChange={set("description")}
+              rows={4}
+              maxLength={1200}
+            />
           </Field>
         </div>
       </div>

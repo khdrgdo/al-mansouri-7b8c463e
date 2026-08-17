@@ -33,12 +33,16 @@ function MapPage() {
         title="الخريطة التفاعلية"
         description="المواقع المسجَّلة بإحداثيات موثّقة. اضغط على أي علامة لعرض نبذة سريعة والانتقال لصفحة الموقع."
       />
-      <div className="mx-auto max-w-6xl px-4 py-12">
+      <div className="mx-auto max-w-[1400px] px-5 py-14 lg:px-10">
         <ClientOnly
-          fallback={<div className="h-[70vh] min-h-[420px] w-full animate-pulse rounded-lg bg-muted" />}
+          fallback={
+            <div className="h-[70vh] min-h-[420px] w-full animate-pulse rounded-lg bg-muted" />
+          }
         >
           <Suspense
-            fallback={<div className="h-[70vh] min-h-[420px] w-full animate-pulse rounded-lg bg-muted" />}
+            fallback={
+              <div className="h-[70vh] min-h-[420px] w-full animate-pulse rounded-lg bg-muted" />
+            }
           >
             <LocationsMap points={points} />
           </Suspense>

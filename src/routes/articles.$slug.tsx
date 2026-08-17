@@ -1,10 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getArticle } from "@/lib/public.functions";
-import { SiteLayout } from "@/components/site/SiteLayout";
+import { SiteLayout, Container, Crumbs, Prose } from "@/components/site/SiteLayout";
 import { MediaImage } from "@/components/site/MediaImage";
+import { Reveal } from "@/components/site/Reveal";
 import { CommentsSection } from "@/components/site/CommentsSection";
 import { VERIFICATION_LABELS } from "@/lib/constants";
-import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/articles/$slug")({
   loader: async ({ params }) => {
@@ -44,121 +44,168 @@ function ArticlePage() {
 
   return (
     <SiteLayout>
-      <article className="mx-auto max-w-3xl px-4 py-12">
-        <nav className="mb-6 text-sm text-muted-foreground">
-          <Link to="/articles" className="hover:text-primary">
-            المقالات
-          </Link>
-          <span className="px-2">/</span>
-          <span>{article.title}</span>
-        </nav>
+      {/* ————— Masthead ————— */}
+      <section className="border-b border-border bg-paper">
+        <Container className="pb-14 pt-10 md:pb-20 md:pt-14">
+          <Crumbs parent="المقالات" parentTo="/articles" current={article.title} />
 
-        <div className="flex flex-wrap items-center gap-2">
-          {category ? <Badge variant="secondary">{category.name}</Badge> : null}
-          <Badge variant="outline">
-            {VERIFICATION_LABELS[article.verification] ?? article.verification}
-          </Badge>
-        </div>
-
-        <h1 className="mt-3 text-3xl font-bold text-balance text-foreground md:text-4xl">
-          {article.title}
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {[
-            article.author,
-            article.published_at
-              ? new Date(article.published_at).toLocaleDateString("ar-EG")
-              : null,
-          ]
-            .filter(Boolean)
-            .join(" — ")}
-        </p>
-
-        {article.cover_image_url ? (
-          <MediaImage
-            path={article.cover_image_url}
-            alt={article.title}
-            className="mt-8 rounded-lg"
-            ratio="aspect-[16/9]"
-          />
-        ) : null}
-
-        {article.excerpt ? (
-          <p className="mt-8 border-r-4 border-primary pr-4 text-lg leading-9 text-muted-foreground">
-            {article.excerpt}
-          </p>
-        ) : null}
-
-        {article.content ? (
-          <div className="mt-8 whitespace-pre-line text-base leading-9 text-foreground">
-            {article.content}
-          </div>
-        ) : null}
-
-        {tags.length > 0 ? (
-          <div className="mt-8 flex flex-wrap gap-2">
-            {tags.map((t: { slug: string; name: string } | null) =>
-              t ? (
-                <Badge key={t.slug} variant="secondary">
-                  #{t.name}
-                </Badge>
-              ) : null,
-            )}
-          </div>
-        ) : null}
-
-        {locations.length > 0 || people.length > 0 ? (
-          <section className="mt-8 rounded-lg border border-border bg-secondary/50 p-5">
-            <h2 className="text-sm font-semibold text-foreground">مرتبط بـ</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {locations.map((l: { slug: string; name: string } | null) =>
-                l ? (
-                  <Link key={l.slug} to="/locations/$slug" params={{ slug: l.slug }}>
-                    <Badge variant="outline">{l.name}</Badge>
-                  </Link>
-                ) : null,
-              )}
-              {people.map((p: { slug: string; name: string } | null) =>
-                p ? (
-                  <Link key={p.slug} to="/people/$slug" params={{ slug: p.slug }}>
-                    <Badge variant="outline">{p.name}</Badge>
-                  </Link>
-                ) : null,
-              )}
-            </div>
-          </section>
-        ) : null}
-
-        {article.sources ? (
-          <section className="mt-8 rounded-lg border border-border bg-secondary/50 p-5">
-            <h2 className="text-sm font-semibold text-foreground">المصادر</h2>
-            <p className="mt-2 whitespace-pre-line text-sm leading-8 text-muted-foreground">
-              {article.sources}
+          <Reveal className="mt-10 max-w-3xl">
+            <p className="eyebrow mb-6">
+              {[category?.name, VERIFICATION_LABELS[article.verification] ?? article.verification]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
-          </section>
-        ) : null}
+            <h1 className="font-display text-4xl leading-[1.05] text-balance text-foreground md:text-6xl">
+              {article.title}
+            </h1>
+            <p className="mt-6 text-sm text-muted-foreground">
+              {[
+                article.author,
+                article.published_at
+                  ? new Date(article.published_at).toLocaleDateString("ar-EG")
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" — ")}
+            </p>
+          </Reveal>
+        </Container>
+      </section>
 
-        {related.length > 0 ? (
-          <section className="mt-10">
-            <h2 className="text-xl font-bold text-foreground">مقالات ذات صلة</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              {related.map((r: { id: string; slug: string; title: string; cover_image_url: string | null }) => (
-                <Link
-                  key={r.id}
-                  to="/articles/$slug"
-                  params={{ slug: r.slug }}
-                  className="overflow-hidden rounded-lg border border-border bg-card hover:border-primary"
-                >
-                  <MediaImage path={r.cover_image_url} alt={r.title} />
-                  <p className="p-3 text-sm font-medium text-foreground">{r.title}</p>
-                </Link>
-              ))}
+      {/* ————— الصورة ————— */}
+      {article.cover_image_url ? (
+        <section className="border-b border-border py-12 md:py-16">
+          <Container>
+            <Reveal>
+              <MediaImage
+                path={article.cover_image_url}
+                alt={article.title}
+                ratio="aspect-[21/9]"
+                priority
+              />
+            </Reveal>
+          </Container>
+        </section>
+      ) : null}
+
+      <section className="py-14 md:py-20">
+        <Container>
+          <div className="grid gap-12 md:grid-cols-12">
+            <article className="md:col-span-7">
+              {article.excerpt ? (
+                <Reveal>
+                  <p className="border-r-2 border-primary pr-5 text-lg leading-9 text-muted-foreground">
+                    {article.excerpt}
+                  </p>
+                </Reveal>
+              ) : null}
+
+              {article.content ? (
+                <Reveal delay={80} className="mt-8">
+                  <Prose>{article.content}</Prose>
+                </Reveal>
+              ) : null}
+
+              {tags.length > 0 ? (
+                <Reveal delay={140} className="mt-10 flex flex-wrap gap-2">
+                  {tags.map((t: { slug: string; name: string } | null) =>
+                    t ? (
+                      <span
+                        key={t.slug}
+                        className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
+                      >
+                        #{t.name}
+                      </span>
+                    ) : null,
+                  )}
+                </Reveal>
+              ) : null}
+
+              {article.sources ? (
+                <Reveal className="mt-14">
+                  <h2 className="font-display text-xl text-foreground">المصادر</h2>
+                  <p className="mt-4 whitespace-pre-line text-sm leading-8 text-muted-foreground">
+                    {article.sources}
+                  </p>
+                </Reveal>
+              ) : null}
+            </article>
+
+            {locations.length > 0 || people.length > 0 ? (
+              <aside className="md:col-span-4 md:col-start-9">
+                <Reveal>
+                  <h2 className="font-display text-xl text-foreground">مرتبط بـ</h2>
+                  <ul className="mt-4 grid">
+                    {locations.map((l: { slug: string; name: string } | null) =>
+                      l ? (
+                        <li key={l.slug} className="border-b border-border last:border-0">
+                          <Link
+                            to="/locations/$slug"
+                            params={{ slug: l.slug }}
+                            className="block rounded-sm py-3 text-sm text-foreground transition-colors hover:text-primary"
+                          >
+                            {l.name}
+                          </Link>
+                        </li>
+                      ) : null,
+                    )}
+                    {people.map((p: { slug: string; name: string } | null) =>
+                      p ? (
+                        <li key={p.slug} className="border-b border-border last:border-0">
+                          <Link
+                            to="/people/$slug"
+                            params={{ slug: p.slug }}
+                            className="block rounded-sm py-3 text-sm text-foreground transition-colors hover:text-primary"
+                          >
+                            {p.name}
+                          </Link>
+                        </li>
+                      ) : null,
+                    )}
+                  </ul>
+                </Reveal>
+              </aside>
+            ) : null}
+          </div>
+        </Container>
+      </section>
+
+      {/* ————— مقالات ذات صلة ————— */}
+      {related.length > 0 ? (
+        <section className="border-t border-border py-14 md:py-20">
+          <Container>
+            <Reveal>
+              <h2 className="font-display text-2xl text-foreground md:text-3xl">مقالات ذات صلة</h2>
+            </Reveal>
+            <div className="mt-8 grid gap-8 sm:grid-cols-3">
+              {related.map(
+                (
+                  r: { id: string; slug: string; title: string; cover_image_url: string | null },
+                  i: number,
+                ) => (
+                  <Reveal key={r.id} delay={i * 80}>
+                    <Link to="/articles/$slug" params={{ slug: r.slug }} className="group block">
+                      <MediaImage
+                        path={r.cover_image_url}
+                        alt={r.title}
+                        ratio="aspect-[4/3]"
+                        imgClassName="group-hover:scale-[1.04]"
+                      />
+                      <p className="mt-3 font-display text-base leading-tight text-foreground transition-colors group-hover:text-primary">
+                        {r.title}
+                      </p>
+                    </Link>
+                  </Reveal>
+                ),
+              )}
             </div>
-          </section>
-        ) : null}
+          </Container>
+        </section>
+      ) : null}
 
+      <Container className="pb-24 pt-14 md:pt-20">
         <CommentsSection targetType="article" targetId={article.id} />
-      </article>
+      </Container>
     </SiteLayout>
   );
 }
