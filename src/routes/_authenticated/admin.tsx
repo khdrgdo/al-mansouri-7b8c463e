@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { ComposeTab } from "@/components/admin/ComposeTab";
+import { TeamTab } from "@/components/admin/TeamTab";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -20,6 +22,21 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function AdminPage() {
   const qc = useQueryClient();
   const navigate = useNavigate();
+
+  const me = useQuery({
+    queryKey: ["admin", "me"],
+    queryFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return null;
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userData.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      return { id: userData.user.id, isAdmin: !!roleRow };
+    },
+  });
 
   const comments = useQuery({
     queryKey: ["admin", "comments"],
@@ -74,18 +91,27 @@ function AdminPage() {
       const results = await Promise.all(queries);
       const error = results.find((result) => result.error)?.error;
       if (error) throw error;
-      const types = ["articles", "historical_events", "locations", "people", "archive_items", "documents"] as const;
-      return results.flatMap((result, index) =>
-        (result.data ?? []).map((row) => {
-          const item = row as { id: string; title?: string; name?: string; created_at: string };
-          return {
-            id: item.id,
-            title: item.title ?? item.name ?? "مسودة بلا عنوان",
-            table: types[index]!,
-            created_at: item.created_at,
-          };
-        }),
-      ).sort((a, b) => b.created_at.localeCompare(a.created_at));
+      const types = [
+        "articles",
+        "historical_events",
+        "locations",
+        "people",
+        "archive_items",
+        "documents",
+      ] as const;
+      return results
+        .flatMap((result, index) =>
+          (result.data ?? []).map((row) => {
+            const item = row as { id: string; title?: string; name?: string; created_at: string };
+            return {
+              id: item.id,
+              title: item.title ?? item.name ?? "مسودة بلا عنوان",
+              table: types[index]!,
+              created_at: item.created_at,
+            };
+          }),
+        )
+        .sort((a, b) => b.created_at.localeCompare(a.created_at));
     },
   });
 
@@ -149,7 +175,14 @@ function AdminPage() {
   });
 
   const publishDraft = useMutation({
-    mutationFn: async ({ table, id }: { table: "articles" | "historical_events" | "locations" | "people" | "archive_items" | "documents"; id: string }) => {
+    mutationFn: async ({
+      table,
+      id,
+    }: {
+      table:
+        "articles" | "historical_events" | "locations" | "people" | "archive_items" | "documents";
+      id: string;
+    }) => {
       const { error } = await supabase.from(table).update({ published: true }).eq("id", id);
       if (error) throw error;
     },
@@ -192,12 +225,18 @@ function AdminPage() {
       <main className="mx-auto max-w-6xl px-4 py-10">
         <Tabs defaultValue="comments" dir="rtl">
           <TabsList>
+            <TabsTrigger value="compose">نشر محتوى</TabsTrigger>
             <TabsTrigger value="comments">التعليقات</TabsTrigger>
             <TabsTrigger value="submissions">المساهمات</TabsTrigger>
             <TabsTrigger value="ads">الإعلانات</TabsTrigger>
             <TabsTrigger value="drafts">المسودات</TabsTrigger>
             <TabsTrigger value="mcp">MCP</TabsTrigger>
+            {me.data?.isAdmin ? <TabsTrigger value="team">الفريق</TabsTrigger> : null}
           </TabsList>
+
+          <TabsContent value="compose">
+            {me.data ? <ComposeTab currentUserId={me.data.id} /> : null}
+          </TabsContent>
 
           <TabsContent value="comments" className="mt-6 grid gap-3">
             {(comments.data ?? []).map((c) => (
@@ -251,7 +290,10 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="drafts" className="mt-6 grid gap-3">
             {(drafts.data ?? []).map((draft) => (
-              <div key={`${draft.table}-${draft.id}`} className="rounded-lg border border-border bg-card p-4">
+              <div
+                key={`${draft.table}-${draft.id}`}
+                className="rounded-lg border border-border bg-card p-4"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="font-semibold text-foreground">{draft.title}</p>
@@ -338,6 +380,12 @@ function AdminPage() {
               </div>
             </section>
           </TabsContent>
+
+          {me.data?.isAdmin ? (
+            <TabsContent value="team">
+              <TeamTab currentUserId={me.data.id} />
+            </TabsContent>
+          ) : null}
         </Tabs>
       </main>
     </div>
