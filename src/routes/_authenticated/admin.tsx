@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { ComposeTab } from "@/components/admin/ComposeTab";
 import { TeamTab } from "@/components/admin/TeamTab";
+import DraftsList from "@/components/admin/DraftsList";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -77,44 +78,6 @@ function AdminPage() {
     },
   });
 
-  const drafts = useQuery({
-    queryKey: ["admin", "drafts"],
-    queryFn: async () => {
-      const queries = [
-        supabase.from("articles").select("id, title, created_at").eq("published", false),
-        supabase.from("historical_events").select("id, title, created_at").eq("published", false),
-        supabase.from("locations").select("id, name, created_at").eq("published", false),
-        supabase.from("people").select("id, name, created_at").eq("published", false),
-        supabase.from("archive_items").select("id, title, created_at").eq("published", false),
-        supabase.from("documents").select("id, title, created_at").eq("published", false),
-      ] as const;
-      const results = await Promise.all(queries);
-      const error = results.find((result) => result.error)?.error;
-      if (error) throw error;
-      const types = [
-        "articles",
-        "historical_events",
-        "locations",
-        "people",
-        "archive_items",
-        "documents",
-      ] as const;
-      return results
-        .flatMap((result, index) =>
-          (result.data ?? []).map((row) => {
-            const item = row as { id: string; title?: string; name?: string; created_at: string };
-            return {
-              id: item.id,
-              title: item.title ?? item.name ?? "مسودة بلا عنوان",
-              table: types[index]!,
-              created_at: item.created_at,
-            };
-          }),
-        )
-        .sort((a, b) => b.created_at.localeCompare(a.created_at));
-    },
-  });
-
   const capabilities = useQuery({
     queryKey: ["admin", "mcp_capabilities"],
     queryFn: async () => {
@@ -172,25 +135,6 @@ function AdminPage() {
       qc.invalidateQueries({ queryKey: ["admin"] });
     },
     onError: (e: Error) => toast.error(e.message || "تعذّر التحديث — تأكد من صلاحيات حسابك."),
-  });
-
-  const publishDraft = useMutation({
-    mutationFn: async ({
-      table,
-      id,
-    }: {
-      table:
-        "articles" | "historical_events" | "locations" | "people" | "archive_items" | "documents";
-      id: string;
-    }) => {
-      const { error } = await supabase.from(table).update({ published: true }).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("تم نشر المسودة وأصبحت ظاهرة في الموقع العام.");
-      qc.invalidateQueries({ queryKey: ["admin", "drafts"] });
-    },
-    onError: (e: Error) => toast.error(e.message || "تعذّر نشر المسودة."),
   });
 
   async function signOut() {
@@ -288,32 +232,8 @@ function AdminPage() {
               />
             ))}
           </TabsContent>
-          <TabsContent value="drafts" className="mt-6 grid gap-3">
-            {(drafts.data ?? []).map((draft) => (
-              <div
-                key={`${draft.table}-${draft.id}`}
-                className="rounded-lg border border-border bg-card p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-foreground">{draft.title}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {draft.table} · {new Date(draft.created_at).toLocaleString("ar")}
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    disabled={publishDraft.isPending}
-                    onClick={() => publishDraft.mutate({ table: draft.table, id: draft.id })}
-                  >
-                    نشر الآن
-                  </Button>
-                </div>
-              </div>
-            ))}
-            {drafts.data && drafts.data.length === 0 ? (
-              <p className="text-sm text-muted-foreground">لا توجد مسودات غير منشورة.</p>
-            ) : null}
+          <TabsContent value="drafts" className="mt-6">
+            <DraftsList />
           </TabsContent>
           <TabsContent value="mcp" className="mt-6 grid gap-8">
             <section>

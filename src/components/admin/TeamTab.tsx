@@ -7,15 +7,6 @@ import type { Database } from "@/integrations/supabase/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 /**
  * A throwaway client with persistSession/autoRefreshToken off. signUp() on
@@ -31,14 +22,6 @@ function createEphemeralClient() {
   });
 }
 
-function randomPassword(): string {
-  const bytes = new Uint8Array(18);
-  crypto.getRandomValues(bytes);
-  return btoa(String.fromCharCode(...bytes))
-    .replace(/[+/=]/g, "")
-    .slice(0, 20);
-}
-
 type TeamMember = {
   id: string;
   user_id: string;
@@ -50,7 +33,7 @@ export function TeamTab({ currentUserId }: { currentUserId: string }) {
   const qc = useQueryClient();
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [createdPassword, setCreatedPassword] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
 
   const team = useQuery({
     queryKey: ["admin", "team"],
@@ -71,8 +54,8 @@ export function TeamTab({ currentUserId }: { currentUserId: string }) {
       const trimmedName = displayName.trim();
       if (!trimmedEmail) throw new Error("البريد الإلكتروني مطلوب.");
       if (!trimmedName) throw new Error("اسم العرض مطلوب.");
+      if (password.length < 6) throw new Error("كلمة المرور يجب ألا تقل عن 6 أحرف.");
 
-      const password = randomPassword();
       const ephemeral = createEphemeralClient();
       const { data, error } = await ephemeral.auth.signUp({ email: trimmedEmail, password });
       if (error || !data.user) throw new Error(error?.message || "تعذّر إنشاء الحساب.");
@@ -85,12 +68,17 @@ export function TeamTab({ currentUserId }: { currentUserId: string }) {
       });
       if (roleError) throw roleError;
 
-      return password;
+      return { needsEmailConfirm: !data.session };
     },
-    onSuccess: (password) => {
-      setCreatedPassword(password);
+    onSuccess: ({ needsEmailConfirm }) => {
+      toast.success(
+        needsEmailConfirm
+          ? "تم إنشاء الحساب. قد يحتاج المساعد لتأكيد بريده الإلكتروني (رابط سيصله بالإيميل) قبل أول تسجيل دخول."
+          : "تم إنشاء الحساب ويمكنه تسجيل الدخول مباشرة.",
+      );
       setEmail("");
       setDisplayName("");
+      setPassword("");
       qc.invalidateQueries({ queryKey: ["admin", "team"] });
     },
     onError: (e: Error) => toast.error(e.message || "تعذّر إنشاء الحساب."),
@@ -114,7 +102,7 @@ export function TeamTab({ currentUserId }: { currentUserId: string }) {
         <h2 className="mb-1 text-sm font-semibold text-foreground">إضافة مساعد (سب أدمن)</h2>
         <p className="mb-4 text-xs text-muted-foreground">
           يمكنه نشر مقالات وأرشيف ومواقع وشخصيات مباشرة، مثل صلاحياتك تمامًا في النشر — لكن لا يمكنه
-          إدارة الفريق أو حذف مساعدين آخرين.
+          إدارة الفريق أو حذف مساعدين آخرين. اختر له بريدًا وكلمة مرور وأرسلهما إليه مباشرة.
         </p>
         <div className="grid max-w-md gap-3 rounded-lg border border-border bg-card p-4">
           <div className="grid gap-2">
@@ -130,8 +118,19 @@ export function TeamTab({ currentUserId }: { currentUserId: string }) {
             <Label>اسم العرض (يظهر للزوار عند النشر باسمه)</Label>
             <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
           </div>
+          <div className="grid gap-2">
+            <Label>كلمة المرور (6 أحرف على الأقل)</Label>
+            <Input
+              dir="ltr"
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
           <Button
-            disabled={create.isPending || !email.trim() || !displayName.trim()}
+            disabled={
+              create.isPending || !email.trim() || !displayName.trim() || password.length < 6
+            }
             onClick={() => create.mutate()}
             className="justify-self-start"
           >
@@ -174,35 +173,6 @@ export function TeamTab({ currentUserId }: { currentUserId: string }) {
           </div>
         )}
       </section>
-
-      <AlertDialog open={!!createdPassword} onOpenChange={(o) => !o && setCreatedPassword(null)}>
-        <AlertDialogContent dir="rtl">
-          <AlertDialogHeader className="text-right">
-            <AlertDialogTitle>تم إنشاء الحساب</AlertDialogTitle>
-            <AlertDialogDescription className="text-right">
-              كلمة المرور المؤقتة (ستظهر مرة واحدة فقط — انسخها وأرسلها للمساعد الآن):
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex items-center gap-2 rounded-md border border-border bg-secondary/40 p-3">
-            <code dir="ltr" className="flex-1 text-sm font-mono text-foreground">
-              {createdPassword}
-            </code>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                if (createdPassword) void navigator.clipboard.writeText(createdPassword);
-                toast.success("نُسخت كلمة المرور.");
-              }}
-            >
-              نسخ
-            </Button>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setCreatedPassword(null)}>تم</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
