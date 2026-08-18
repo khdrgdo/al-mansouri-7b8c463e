@@ -463,6 +463,7 @@ export type Database = {
           created_at: string
           id: string
           meta: Json
+          parent_id: string | null
           reported: boolean
           status: string
           target_id: string
@@ -474,6 +475,7 @@ export type Database = {
           created_at?: string
           id?: string
           meta?: Json
+          parent_id?: string | null
           reported?: boolean
           status?: string
           target_id: string
@@ -485,12 +487,21 @@ export type Database = {
           created_at?: string
           id?: string
           meta?: Json
+          parent_id?: string | null
           reported?: boolean
           status?: string
           target_id?: string
           target_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       documents: {
         Row: {
