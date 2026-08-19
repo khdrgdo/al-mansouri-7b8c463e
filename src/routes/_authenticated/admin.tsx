@@ -44,11 +44,74 @@ function AdminPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("comments")
-        .select("id, author_name, body, status, target_type, created_at")
+        .select("id, author_name, body, status, target_type, target_id, created_at")
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
       return data;
+    },
+  });
+
+  const commentTargets = useQuery({
+    queryKey: [
+      "admin",
+      "comment_targets",
+      comments.data?.map((c) => `${c.target_type}:${c.target_id}`),
+    ],
+    enabled: !!comments.data && comments.data.length > 0,
+    queryFn: async () => {
+      const idsByType: Record<string, string[]> = {};
+      for (const c of comments.data ?? []) {
+        (idsByType[c.target_type] ??= []).push(c.target_id);
+      }
+
+      const lookup = new Map<string, { title: string; href: string }>();
+
+      if (idsByType["article"]?.length) {
+        const { data } = await supabase
+          .from("articles")
+          .select("id, title, slug")
+          .in("id", idsByType["article"]);
+        for (const row of data ?? [])
+          lookup.set(`article:${row.id}`, { title: row.title, href: `/articles/${row.slug}` });
+      }
+      if (idsByType["event"]?.length) {
+        const { data } = await supabase
+          .from("historical_events")
+          .select("id, title, slug")
+          .in("id", idsByType["event"]);
+        for (const row of data ?? [])
+          lookup.set(`event:${row.id}`, { title: row.title, href: `/history/${row.slug}` });
+      }
+      if (idsByType["location"]?.length) {
+        const { data } = await supabase
+          .from("locations")
+          .select("id, name, slug")
+          .in("id", idsByType["location"]);
+        for (const row of data ?? [])
+          lookup.set(`location:${row.id}`, { title: row.name, href: `/locations/${row.slug}` });
+      }
+      if (idsByType["person"]?.length) {
+        const { data } = await supabase
+          .from("people")
+          .select("id, name, slug")
+          .in("id", idsByType["person"]);
+        for (const row of data ?? [])
+          lookup.set(`person:${row.id}`, { title: row.name, href: `/people/${row.slug}` });
+      }
+      if (idsByType["archive"]?.length) {
+        const { data } = await supabase
+          .from("archive_items")
+          .select("id, title")
+          .in("id", idsByType["archive"]);
+        // /archive has no per-item detail route (items open via an in-page
+        // dialog, not a URL) — link to the listing; title still tells the
+        // admin *what* was commented on even without a precise deep link.
+        for (const row of data ?? [])
+          lookup.set(`archive:${row.id}`, { title: row.title, href: `/archive` });
+      }
+
+      return lookup;
     },
   });
 
@@ -183,20 +246,38 @@ function AdminPage() {
           </TabsContent>
 
           <TabsContent value="comments" className="mt-6 grid gap-3">
-            {(comments.data ?? []).map((c) => (
-              <Row
-                key={c.id}
-                title={c.author_name}
-                subtitle={c.body}
-                status={c.status}
-                onApprove={() =>
-                  setStatus.mutate({ table: "comments", id: c.id, status: "approved" })
-                }
-                onReject={() =>
-                  setStatus.mutate({ table: "comments", id: c.id, status: "rejected" })
-                }
-              />
-            ))}
+            {(comments.data ?? []).map((c) => {
+              const target = commentTargets.data?.get(`${c.target_type}:${c.target_id}`);
+              const typeLabel: Record<string, string> = {
+                article: "تعليق على مقال",
+                event: "تعليق على حدث",
+                location: "تعليق على موقع",
+                person: "تعليق على شخصية",
+                archive: "تعليق على عنصر أرشيف",
+              };
+              return (
+                <Row
+                  key={c.id}
+                  title={c.author_name}
+                  subtitle={c.body}
+                  status={c.status}
+                  {...(target
+                    ? {
+                        link: {
+                          label: `${typeLabel[c.target_type] ?? "تعليق على"}: ${target.title}`,
+                          href: target.href,
+                        },
+                      }
+                    : {})}
+                  onApprove={() =>
+                    setStatus.mutate({ table: "comments", id: c.id, status: "approved" })
+                  }
+                  onReject={() =>
+                    setStatus.mutate({ table: "comments", id: c.id, status: "rejected" })
+                  }
+                />
+              );
+            })}
           </TabsContent>
 
           <TabsContent value="submissions" className="mt-6 grid gap-3">
@@ -316,12 +397,14 @@ function Row({
   title,
   subtitle,
   status,
+  link,
   onApprove,
   onReject,
 }: {
   title: string;
   subtitle: string | null;
   status: string;
+  link?: { label: string; href: string };
   onApprove: () => void;
   onReject: () => void;
 }) {
@@ -333,6 +416,16 @@ function Row({
           {status}
         </span>
       </div>
+      {link ? (
+        <a
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-1 inline-block text-xs text-primary underline-offset-4 hover:underline"
+        >
+          {link.label} ←
+        </a>
+      ) : null}
       {subtitle ? (
         <p className="mt-2 line-clamp-3 text-sm leading-7 text-muted-foreground">{subtitle}</p>
       ) : null}
