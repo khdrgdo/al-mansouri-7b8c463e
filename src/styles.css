@@ -274,6 +274,14 @@
 }
 
 /* Horizontal snap rail used on mobile compositions */
+/* ذاكرة المكان — subtle archival tint on the Leaflet raster tiles.
+   Deliberately restrained: "modern map with quiet archival character",
+   not a sepia/old-map filter. Most of the visual identity comes from the
+   custom markers/timeline/panel, not this. */
+@utility memory-map-tiles {
+  filter: sepia(0.16) saturate(0.72) contrast(1.04) brightness(1.03) hue-rotate(-4deg);
+}
+
 @utility snap-rail {
   display: flex;
   gap: 1rem;

@@ -701,6 +701,59 @@ export type Database = {
         }
         Relationships: []
       }
+      location_periods: {
+        Row: {
+          created_at: string
+          description: string | null
+          from_year: number
+          id: string
+          label: string
+          location_id: string
+          published: boolean
+          sort_order: number
+          sources: string | null
+          to_year: number | null
+          updated_at: string
+          verification: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          from_year: number
+          id?: string
+          label: string
+          location_id: string
+          published?: boolean
+          sort_order?: number
+          sources?: string | null
+          to_year?: number | null
+          updated_at?: string
+          verification?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          from_year?: number
+          id?: string
+          label?: string
+          location_id?: string
+          published?: boolean
+          sort_order?: number
+          sources?: string | null
+          to_year?: number | null
+          updated_at?: string
+          verification?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_periods_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           address: string | null

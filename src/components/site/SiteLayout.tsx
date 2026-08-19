@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
 import { Reveal } from "./Reveal";
+import { MemoryMapButton } from "./MemoryMapButton";
 import { cn } from "@/lib/utils";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
@@ -17,6 +18,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <SiteFooter />
+      <MemoryMapButton />
     </div>
   );
 }
@@ -51,16 +53,8 @@ export function PageHeader({
 }
 
 /** Shared editorial container. */
-export function Container({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn("mx-auto max-w-[1400px] px-5 lg:px-10", className)}>{children}</div>
-  );
+export function Container({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("mx-auto max-w-[1400px] px-5 lg:px-10", className)}>{children}</div>;
 }
 
 /** Breadcrumb rail used at the top of detail pages. */

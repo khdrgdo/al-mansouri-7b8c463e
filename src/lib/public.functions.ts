@@ -35,53 +35,53 @@ export const getHomeData = createServerFn({ method: "GET" }).handler(async () =>
     featuredArchive,
     sponsor,
   ] = await Promise.all([
-      sb.from("locations").select("id", { count: "exact", head: true }).eq("published", true),
-      sb.from("articles").select("id", { count: "exact", head: true }).eq("published", true),
-      sb
-        .from("archive_items")
-        .select("id", { count: "exact", head: true })
-        .eq("published", true)
-        .eq("media_type", "image"),
-      sb.from("documents").select("id", { count: "exact", head: true }).eq("published", true),
-      sb.from("people").select("id", { count: "exact", head: true }).eq("published", true),
-      sb
-        .from("articles")
-        .select("id, slug, title, excerpt, cover_image_url, published_at")
-        .eq("published", true)
-        .order("published_at", { ascending: false })
-        .limit(3),
-      sb
-        .from("historical_events")
-        .select("id, slug, title, period, summary")
-        .eq("published", true)
-        .order("sort_order", { ascending: true })
-        .limit(4),
-      sb
-        .from("people")
-        .select("id, slug, name, role_title, biography, photo_url")
-        .eq("published", true)
-        .order("created_at", { ascending: false })
-        .limit(4),
-      sb
-        .from("locations")
-        .select("id, slug, name, kind, latitude, longitude")
-        .eq("published", true)
-        .order("name")
-        .limit(8),
-      sb
-        .from("archive_items")
-        .select("id, slug, title, media_url, media_type, alt_text")
-        .eq("published", true)
-        .order("created_at", { ascending: false })
-        .limit(5),
-      sb
-        .from("advertisements")
-        .select("id, advertiser_name, title, description, image_url, website, phone")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-    ]);
+    sb.from("locations").select("id", { count: "exact", head: true }).eq("published", true),
+    sb.from("articles").select("id", { count: "exact", head: true }).eq("published", true),
+    sb
+      .from("archive_items")
+      .select("id", { count: "exact", head: true })
+      .eq("published", true)
+      .eq("media_type", "image"),
+    sb.from("documents").select("id", { count: "exact", head: true }).eq("published", true),
+    sb.from("people").select("id", { count: "exact", head: true }).eq("published", true),
+    sb
+      .from("articles")
+      .select("id, slug, title, excerpt, cover_image_url, published_at")
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .limit(3),
+    sb
+      .from("historical_events")
+      .select("id, slug, title, period, summary")
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .limit(4),
+    sb
+      .from("people")
+      .select("id, slug, name, role_title, biography, photo_url")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(4),
+    sb
+      .from("locations")
+      .select("id, slug, name, kind, latitude, longitude")
+      .eq("published", true)
+      .order("name")
+      .limit(8),
+    sb
+      .from("archive_items")
+      .select("id, slug, title, media_url, media_type, alt_text")
+      .eq("published", true)
+      .order("created_at", { ascending: false })
+      .limit(5),
+    sb
+      .from("advertisements")
+      .select("id, advertiser_name, title, description, image_url, website, phone")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
   return {
     stats: {
@@ -104,7 +104,9 @@ export const listEvents = createServerFn({ method: "GET" }).handler(async () => 
   const sb = publicClient();
   const { data } = await sb
     .from("historical_events")
-    .select("id, slug, title, period, event_date, summary, cover_image_url, verification, sort_order")
+    .select(
+      "id, slug, title, period, event_date, summary, cover_image_url, verification, sort_order",
+    )
     .eq("published", true)
     .order("sort_order", { ascending: true });
   return data ?? [];
@@ -269,7 +271,10 @@ export const getArticle = createServerFn({ method: "GET" })
         .from("article_locations")
         .select("locations(slug, name, published)")
         .eq("article_id", article.id),
-      sb.from("article_people").select("people(slug, name, published)").eq("article_id", article.id),
+      sb
+        .from("article_people")
+        .select("people(slug, name, published)")
+        .eq("article_id", article.id),
       article.category_id
         ? sb
             .from("articles")
@@ -278,8 +283,15 @@ export const getArticle = createServerFn({ method: "GET" })
             .neq("id", article.id)
             .eq("category_id", article.category_id)
             .limit(3)
-        : Promise.resolve({ data: [] as Array<{ id: string; slug: string; title: string; excerpt: string | null; cover_image_url: string | null }> }),
-
+        : Promise.resolve({
+            data: [] as Array<{
+              id: string;
+              slug: string;
+              title: string;
+              excerpt: string | null;
+              cover_image_url: string | null;
+            }>,
+          }),
     ]);
 
     return {
@@ -387,4 +399,34 @@ export const listDocuments = createServerFn({ method: "GET" }).handler(async () 
     .eq("published", true)
     .order("created_at", { ascending: false });
   return data ?? [];
+});
+
+/**
+ * Data for the "ذاكرة المكان" (Memory of the Place) experience. Fetched
+ * once when the experience opens (lazy-loaded component + this call
+ * together), then cached client-side — year selection filters the
+ * already-loaded set, it never refetches.
+ */
+export const getMemoryMapData = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const [locations, periods] = await Promise.all([
+    sb
+      .from("locations")
+      .select("id, slug, name, kind, description, latitude, longitude, verification")
+      .eq("published", true)
+      .not("latitude", "is", null)
+      .not("longitude", "is", null),
+    sb
+      .from("location_periods")
+      .select(
+        "id, location_id, from_year, to_year, label, description, sources, verification, sort_order",
+      )
+      .eq("published", true)
+      .order("sort_order", { ascending: true }),
+  ]);
+
+  return {
+    locations: locations.data ?? [],
+    periods: periods.data ?? [],
+  };
 });
