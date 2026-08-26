@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { globalSearch } from "@/lib/public.functions";
 import { SiteLayout, PageHeader, EmptyState } from "@/components/site/SiteLayout";
@@ -21,12 +21,22 @@ export const Route = createFileRoute("/search")({
   component: SearchPage,
 });
 
+function useDebounced<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
 function SearchPage() {
   const [q, setQ] = useState("");
+  const debouncedQ = useDebounced(q, 300);
   const { data, isFetching } = useQuery({
-    queryKey: ["search", q],
-    enabled: q.trim().length >= 2,
-    queryFn: () => globalSearch({ data: { q } }),
+    queryKey: ["search", debouncedQ],
+    enabled: debouncedQ.trim().length >= 2,
+    queryFn: () => globalSearch({ data: { q: debouncedQ } }),
   });
 
   const groups = [

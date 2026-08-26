@@ -12,6 +12,26 @@ const schema = z.object({
   body: z.string().trim().min(2, "التعليق قصير جدًا").max(2000, "التعليق طويل جدًا"),
 });
 
+const RATE_LIMIT_KEY = "comment_rate_limit";
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
+
+function checkCommentRateLimit(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    const raw = localStorage.getItem(RATE_LIMIT_KEY);
+    const timestamps: number[] = raw ? JSON.parse(raw) : [];
+    const now = Date.now();
+    const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW);
+    if (recent.length >= RATE_LIMIT_MAX) return false;
+    recent.push(now);
+    localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(recent));
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 type CommentRow = {
   id: string;
   author_name: string;
@@ -52,7 +72,7 @@ export function CommentsSection({
     <section className="mt-14 border-t border-border pt-10">
       <h2 className="text-xl font-bold text-foreground">التعليقات والمشاركات</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        شارك ذكرياتك أو معلوماتك — يظهر تعليقك فوراً للجميع.
+        شارك ذكرياتك أو معلوماتك — يظهر تعليقك بعد مراجعة فريق الإدارة.
       </p>
 
       <div className="mt-6">
@@ -177,19 +197,22 @@ function CommentForm({
     mutationFn: async () => {
       const parsed = schema.safeParse({ author_name: name, body });
       if (!parsed.success) throw new Error(parsed.error.issues[0]!.message);
+      if (!checkCommentRateLimit()) {
+        throw new Error("تم تجاوز الحد المسموح. حاول مرة أخرى بعد ساعة.");
+      }
       const { error } = await supabase.from("comments").insert({
         target_type: targetType,
         target_id: targetId,
         author_name: parsed.data.author_name,
         body: parsed.data.body,
         parent_id: parentId ?? null,
-        status: "approved",
+        status: "pending",
       });
       if (error) throw error;
     },
     onSuccess: () => {
       setBody("");
-      toast.success(parentId ? "تم نشر ردّك." : "تم نشر تعليقك.");
+      toast.success(parentId ? "تم إرسال ردّك — يظهر بعد المراجعة." : "تم إرسال تعليقك — يظهر بعد المراجعة.");
       qc.invalidateQueries({ queryKey });
       onSubmitted?.();
     },

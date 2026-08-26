@@ -342,6 +342,49 @@ export const globalSearch = createServerFn({ method: "GET" })
       return { articles: [], events: [], locations: [], people: [], archive: [], documents: [] };
     }
     const sb = publicClient();
+
+    // Try Full-Text Search first (faster, relevance-ranked)
+    try {
+      const { data: rows } = await sb.rpc("global_search", { _query: q });
+      if (rows && rows.length > 0) {
+        const bucket = {
+          articles: [] as Array<{ id: string; slug: string; title: string; excerpt: string | null }>,
+          events: [] as Array<{ id: string; slug: string; title: string; summary: string | null; period: string | null }>,
+          locations: [] as Array<{ id: string; slug: string; name: string; kind: string; description: string | null }>,
+          people: [] as Array<{ id: string; slug: string; name: string; role_title: string | null }>,
+          archive: [] as Array<{ id: string; slug: string; title: string; media_type: string }>,
+          documents: [] as Array<{ id: string; title: string; description: string | null; file_url: string | null }>,
+        };
+        for (const row of rows) {
+          const common = { id: row.id, slug: row.slug, title: row.title };
+          switch (row.source) {
+            case "article":
+              bucket.articles.push({ ...common, excerpt: row.excerpt });
+              break;
+            case "event":
+              bucket.events.push({ ...common, summary: row.excerpt, period: null });
+              break;
+            case "location":
+              bucket.locations.push({ ...common, name: row.title, kind: "", description: row.excerpt });
+              break;
+            case "person":
+              bucket.people.push({ ...common, name: row.title, role_title: null });
+              break;
+            case "archive":
+              bucket.archive.push({ ...common, media_type: "" });
+              break;
+            case "document":
+              bucket.documents.push({ ...common, file_url: null });
+              break;
+          }
+        }
+        return bucket;
+      }
+    } catch {
+      // Fallback to ILIKE if FTS migration hasn't been applied yet
+    }
+
+    // Fallback: ILIKE-based search
     const like = `%${q}%`;
     const [articles, events, locations, people, archive, documents] = await Promise.all([
       sb
