@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import type { Map as LeafletMap } from "leaflet";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 export type MapPoint = {
   id: string;
@@ -13,63 +14,104 @@ export type MapPoint = {
 
 export default function LocationsMap({ points }: { points: MapPoint[] }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    if (!containerRef.current || mapRef.current) return;
 
-    (async () => {
-      const L = await import("leaflet");
-      if (cancelled || !containerRef.current || mapRef.current) return;
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: {
+        version: 8,
+        sources: {
+          satellite: {
+            type: "raster",
+            tiles: [
+              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            ],
+            tileSize: 256,
+            attribution: "© Esri",
+            maxzoom: 18,
+          },
+        },
+        layers: [
+          {
+            id: "satellite-layer",
+            type: "raster",
+            source: "satellite",
+            minzoom: 0,
+            maxzoom: 22,
+          },
+        ],
+      },
+      center: [33.9, 18.35],
+      zoom: 7,
+      pitch: 30,
+      bearing: -10,
+      scrollWheelZoom: false,
+    });
 
-      const map = L.map(containerRef.current, { scrollWheelZoom: false }).setView(
-        [18.35, 33.9],
-        8,
-      );
-      mapRef.current = map;
+    mapRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-        maxZoom: 18,
-      }).addTo(map);
+    const valid = points.filter((p) => p.latitude != null && p.longitude != null);
 
-      const icon = L.divIcon({
-        className: "",
-        html: `<span style="display:block;width:14px;height:14px;border-radius:9999px;background:#1f5c4b;box-shadow:0 0 0 4px rgba(31,92,75,.25)"></span>`,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
-      });
+    map.on("load", () => {
+      for (const p of valid) {
+        const el = document.createElement("div");
+        el.style.cssText = `
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #2D8B5A;
+          border: 3px solid rgba(45,139,90,0.4);
+          box-shadow: 0 0 12px rgba(45,139,90,0.5);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        `;
 
-      const valid = points.filter((p) => p.latitude != null && p.longitude != null);
-      const markers = valid.map((p) =>
-        L.marker([p.latitude!, p.longitude!], { icon, title: p.name }).bindPopup(
-          `<div dir="rtl" style="font-family:inherit;min-width:160px">
-             <strong>${escapeHtml(p.name)}</strong>
-             ${p.kind ? `<div style="font-size:12px;color:#666">${escapeHtml(p.kind)}</div>` : ""}
-             ${p.description ? `<p style="margin:6px 0 8px;font-size:12px">${escapeHtml(p.description.slice(0, 120))}</p>` : ""}
-             <a href="/locations/${encodeURIComponent(p.slug)}" style="font-size:12px;color:#1f5c4b">صفحة الموقع</a>
-           </div>`,
-        ),
-      );
+        el.addEventListener("mouseenter", () => {
+          el.style.transform = "scale(1.3)";
+          el.style.boxShadow = "0 0 20px rgba(45,139,90,0.7)";
+        });
+        el.addEventListener("mouseleave", () => {
+          el.style.transform = "scale(1)";
+          el.style.boxShadow = "0 0 12px rgba(45,139,90,0.5)";
+        });
 
-      markers.forEach((m) => m.addTo(map));
+        const popup = new maplibregl.Popup({ offset: 20, closeButton: false }).setHTML(`
+          <div dir="rtl" style="font-family:inherit;min-width:160px;padding:4px">
+            <strong>${escapeHtml(p.name)}</strong>
+            ${p.kind ? `<div style="font-size:12px;color:#666;margin-top:2px">${escapeHtml(p.kind)}</div>` : ""}
+            ${p.description ? `<p style="margin:6px 0 8px;font-size:12px">${escapeHtml(p.description.slice(0, 120))}</p>` : ""}
+            <a href="/locations/${encodeURIComponent(p.slug)}" style="font-size:12px;color:#2D8B5A">صفحة الموقع</a>
+          </div>
+        `);
+
+        new maplibregl.Marker({ element: el })
+          .setLngLat([p.longitude!, p.latitude!])
+          .setPopup(popup)
+          .addTo(map);
+      }
 
       if (valid.length > 0) {
-        map.fitBounds(
-          L.latLngBounds(valid.map((p) => [p.latitude!, p.longitude!] as [number, number])),
-          { padding: [40, 40], maxZoom: 12 },
-        );
+        const bounds = new maplibregl.LngLatBounds();
+        valid.forEach((p) => bounds.extend([p.longitude!, p.latitude!]));
+        map.fitBounds(bounds, { padding: 60 });
       }
-    })();
+    });
 
     return () => {
-      cancelled = true;
       mapRef.current?.remove();
       mapRef.current = null;
     };
   }, [points]);
 
-  return <div ref={containerRef} className="h-[70vh] min-h-[420px] w-full rounded-lg border border-border" />;
+  return (
+    <div
+      ref={containerRef}
+      className="h-[70vh] min-h-[420px] w-full overflow-hidden rounded-2xl border border-border"
+    />
+  );
 }
 
 function escapeHtml(value: string) {

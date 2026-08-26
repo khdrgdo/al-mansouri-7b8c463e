@@ -20,6 +20,7 @@ import { Route as MapRouteImport } from './routes/map'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -87,6 +88,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -257,6 +266,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/privacy'
     | '/search'
+    | '/sitemap.xml'
     | '/terms'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/privacy'
     | '/search'
+    | '/sitemap.xml'
     | '/terms'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/privacy'
     | '/search'
+    | '/sitemap.xml'
     | '/terms'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -338,6 +350,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   PrivacyRoute: typeof PrivacyRoute
   SearchRoute: typeof SearchRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -430,6 +443,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   PrivacyRoute: PrivacyRoute,
   SearchRoute: SearchRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:

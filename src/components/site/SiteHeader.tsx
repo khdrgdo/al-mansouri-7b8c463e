@@ -9,7 +9,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -25,47 +25,53 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-colors duration-300",
+        "fixed top-4 left-4 right-4 z-50 transition-all duration-500",
         scrolled || open
-          ? "border-b border-border bg-background/90 backdrop-blur-md"
-          : "border-b border-transparent bg-background/40 backdrop-blur-sm",
+          ? "top-3 mx-3 rounded-2xl border border-white/20 bg-white/70 shadow-lg shadow-black/5 backdrop-blur-xl md:mx-8 lg:mx-12"
+          : "mx-0 rounded-none border-transparent bg-transparent",
       )}
     >
-      <div className="mx-auto grid h-16 max-w-[1400px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 md:h-20 lg:px-10">
-        <Link to="/" className="flex min-w-0 items-baseline gap-3">
-          <span className="font-display text-lg font-bold leading-none tracking-tight text-foreground md:text-xl">
-            المناصير
-          </span>
-          <span className="hidden truncate text-[11px] tracking-[0.18em] text-muted-foreground sm:block">
-            أرشيف رقمي · منصوري موقد ناارنا
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 md:h-18 lg:px-10">
+        {/* Logo */}
+        <Link to="/" className="group flex items-center gap-3">
+          <span
+            className="text-lg font-bold leading-tight text-foreground"
+            style={{ fontFamily: "'Aref Ruqaa', serif" }}
+          >
+            المَنَاصِير
           </span>
         </Link>
 
-        <div className="flex items-center gap-1 md:gap-6">
-          <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-6 lg:flex">
-            {MAIN_NAV.filter((i) => i.to !== "/").map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeProps={{ className: "text-foreground" }}
-                className="relative py-1 text-sm text-muted-foreground transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 hover:text-foreground hover:after:origin-left hover:after:scale-x-100"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+        {/* Desktop Nav */}
+        <nav
+          aria-label="التنقل الرئيسي"
+          className="hidden items-center gap-1 lg:flex"
+        >
+          {MAIN_NAV.filter((i) => i.to !== "/").map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              activeProps={{ className: "bg-primary/10 text-primary" }}
+              className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-foreground/5 hover:text-foreground"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
+        {/* Actions */}
+        <div className="flex items-center gap-2">
           <Link
             to="/search"
             aria-label="بحث"
-            className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="grid h-10 w-10 place-items-center rounded-full text-muted-foreground transition-all duration-200 hover:bg-foreground/5 hover:text-foreground"
           >
             <Search className="h-[18px] w-[18px]" />
           </Link>
 
           <Link
             to="/contribute"
-            className="hidden rounded-full border border-foreground/20 px-4 py-2 text-xs font-medium text-foreground transition-colors hover:bg-foreground hover:text-background md:inline-flex"
+            className="hidden rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary/25 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 md:inline-flex"
           >
             ساهم في الأرشيف
           </Link>
@@ -75,7 +81,7 @@ export function SiteHeader() {
             aria-label={open ? "إغلاق القائمة" : "فتح القائمة"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-full text-foreground transition-colors hover:bg-secondary lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full text-foreground transition-all duration-200 hover:bg-foreground/5 lg:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -85,22 +91,24 @@ export function SiteHeader() {
       {/* Mobile panel */}
       <div
         className={cn(
-          "fixed inset-x-0 top-16 z-40 origin-top overflow-hidden border-b border-border bg-background transition-[max-height,opacity] duration-300 lg:hidden",
-          open ? "max-h-[80vh] opacity-100" : "pointer-events-none max-h-0 opacity-0",
+          "fixed inset-x-0 top-20 z-40 origin-top overflow-hidden rounded-2xl border border-white/20 bg-white/90 shadow-2xl backdrop-blur-xl transition-all duration-400 lg:hidden",
+          open
+            ? "scale-100 opacity-100"
+            : "pointer-events-none scale-95 opacity-0",
         )}
       >
-        <nav aria-label="قائمة الجوال" className="px-5 pb-8 pt-4">
-          <ul className="grid">
+        <nav aria-label="قائمة الجوال" className="p-6">
+          <ul className="grid gap-2">
             {MAIN_NAV.map((item, i) => (
-              <li key={item.to} className="border-b border-border/70 last:border-0">
+              <li key={item.to}>
                 <Link
                   to={item.to}
                   onClick={() => setOpen(false)}
                   activeOptions={{ exact: item.to === "/" }}
-                  activeProps={{ className: "text-primary" }}
-                  className="flex items-baseline gap-4 py-4 font-display text-2xl text-foreground"
+                  activeProps={{ className: "bg-primary/10 text-primary" }}
+                  className="flex items-center gap-4 rounded-xl px-4 py-3 text-lg font-medium text-foreground transition-all duration-200 hover:bg-foreground/5"
                 >
-                  <span className="text-[11px] tabular-nums text-muted-foreground">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/5 text-sm tabular-nums text-muted-foreground">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   {item.label}
@@ -111,7 +119,7 @@ export function SiteHeader() {
           <Link
             to="/contribute"
             onClick={() => setOpen(false)}
-            className="mt-6 block rounded-full bg-foreground px-4 py-3 text-center text-sm font-medium text-background"
+            className="mt-6 block rounded-xl bg-gradient-to-r from-primary to-secondary px-4 py-4 text-center text-sm font-semibold text-white shadow-lg shadow-primary/25"
           >
             ساهم في الأرشيف
           </Link>

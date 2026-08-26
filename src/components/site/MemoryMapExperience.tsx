@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "@tanstack/react-router";
 import { X, Compass } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -44,8 +45,8 @@ const VERIFICATION_DOT: Record<string, string> = {
 export default function MemoryMapExperience({ onClose }: { onClose: () => void }) {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<LeafletMap | null>(null);
-  const markersRef = useRef<globalThis.Map<string, LeafletMarker> | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map());
 
   const [mode, setMode] = useState<"current" | "historical">("current");
   const [year, setYear] = useState<number | null>(null);
@@ -66,12 +67,12 @@ export default function MemoryMapExperience({ onClose }: { onClose: () => void }
     const years = periods.flatMap((p) => [p.from_year, p.to_year ?? currentYear]);
     const min = Math.min(...years);
     const max = Math.max(...years);
-    if (min === max) return null; // not enough range to build a meaningful timeline
+    if (min === max) return null;
     return { min, max };
   }, [periods]);
 
   const periodsByLocation = useMemo(() => {
-    const map = new globalThis.Map<string, MMPeriod[]>();
+    const map = new Map<string, MMPeriod[]>();
     for (const p of periods) {
       const list = map.get(p.location_id) ?? [];
       list.push(p);
@@ -80,7 +81,6 @@ export default function MemoryMapExperience({ onClose }: { onClose: () => void }
     return map;
   }, [periods]);
 
-  // Which locations are visible for the current mode/year.
   const visibleLocations = useMemo(() => {
     if (mode === "current" || year === null) return locations;
     return locations.filter((loc) => {
@@ -91,98 +91,128 @@ export default function MemoryMapExperience({ onClose }: { onClose: () => void }
     });
   }, [locations, mode, year, periodsByLocation]);
 
-  // Init map once data is ready.
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Init map
   useEffect(() => {
     if (isLoading || !containerRef.current || mapRef.current) return;
-    let cancelled = false;
 
-    (async () => {
-      const L = await import("leaflet");
-      if (cancelled || !containerRef.current || mapRef.current) return;
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: {
+        version: 8,
+        sources: {
+          satellite: {
+            type: "raster",
+            tiles: [
+              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            ],
+            tileSize: 256,
+            attribution: "© Esri",
+            maxzoom: 18,
+          },
+        },
+        layers: [
+          {
+            id: "satellite-layer",
+            type: "raster",
+            source: "satellite",
+            minzoom: 0,
+            maxzoom: 22,
+          },
+        ],
+      },
+      center: [33.9, 18.35],
+      zoom: 6.5,
+      pitch: 45,
+      bearing: -17.6,
+      antialias: true,
+      maxPitch: 60,
+    });
 
-      const map = L.map(containerRef.current, {
-        scrollWheelZoom: true,
-        zoomControl: !isMobile,
-      }).setView([18.35, 33.9], 7);
-      mapRef.current = map;
+    mapRef.current = map;
+    markersRef.current = new Map();
 
-      const tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-        maxZoom: 18,
-      }).addTo(map);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Leaflet's tile pane element isn't in its own public types
-      (tileLayer as any).getContainer()?.classList.add("memory-map-tiles");
-
-      markersRef.current = new globalThis.Map<string, LeafletMarker>();
+    map.on("load", () => {
+      setMapLoaded(true);
 
       if (locations.length > 0) {
-        const bounds = L.latLngBounds(locations.map((p) => [p.latitude, p.longitude]));
-        map.fitBounds(bounds, { padding: [60, 60], maxZoom: 11 });
+        const bounds = new maplibregl.LngLatBounds();
+        locations.forEach((loc) => bounds.extend([loc.longitude, loc.latitude]));
+        map.fitBounds(bounds, { padding: 80 });
       }
-    })();
+    });
 
     return () => {
-      cancelled = true;
+      setMapLoaded(false);
       mapRef.current?.remove();
       mapRef.current = null;
-      markersRef.current = null;
+      markersRef.current.clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
-  // Sync markers whenever the visible set changes.
+  // Sync markers
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
-    let cancelled = false;
+    if (!map || !mapLoaded) return;
 
-    (async () => {
-      const L = await import("leaflet");
-      if (cancelled || !mapRef.current) return;
-      const existing = markersRef.current ?? new globalThis.Map<string, LeafletMarker>();
+    const existing = markersRef.current;
 
-      const visibleIds = new Set(visibleLocations.map((l) => l.id));
-      for (const [id, marker] of existing) {
-        if (!visibleIds.has(id)) {
-          marker.remove();
-          existing.delete(id);
-        }
+    const visibleIds = new Set(visibleLocations.map((l) => l.id));
+    for (const [id, marker] of existing) {
+      if (!visibleIds.has(id)) {
+        marker.remove();
+        existing.delete(id);
       }
+    }
 
-      for (const loc of visibleLocations) {
-        if (existing.has(loc.id)) continue;
-        const isSelected = selected?.id === loc.id;
-        const icon = L.divIcon({
-          className: "",
-          html: markerHtml(isSelected),
-          iconSize: [isSelected ? 18 : 12, isSelected ? 18 : 12],
-          iconAnchor: [isSelected ? 9 : 6, isSelected ? 9 : 6],
-        });
-        const marker = L.marker([loc.latitude, loc.longitude], { icon, title: loc.name }).addTo(
-          map,
-        );
-        marker.on("click", () => setSelected(loc));
-        existing.set(loc.id, marker);
-      }
+    for (const loc of visibleLocations) {
+      if (existing.has(loc.id)) continue;
+      const isSelected = selected?.id === loc.id;
 
-      markersRef.current = existing;
-    })();
+      const el = document.createElement("div");
+      el.style.cssText = `
+        width: ${isSelected ? "24px" : "16px"};
+        height: ${isSelected ? "24px" : "16px"};
+        border-radius: 50%;
+        background: ${isSelected ? "#c9a24b" : "#2E9EAF"};
+        border: 3px solid ${isSelected ? "rgba(201,162,75,0.5)" : "rgba(46,158,175,0.4)"};
+        box-shadow: 0 0 ${isSelected ? "20px" : "10px"} ${isSelected ? "rgba(201,162,75,0.6)" : "rgba(46,158,175,0.4)"};
+        cursor: pointer;
+        transition: all 0.3s ease;
+        transform: ${isSelected ? "scale(1.2)" : "scale(1)"};
+      `;
 
-    return () => {
-      cancelled = true;
-    };
-  }, [visibleLocations, selected?.id]);
+      el.addEventListener("mouseenter", () => {
+        el.style.transform = "scale(1.3)";
+        el.style.boxShadow = "0 0 25px rgba(46,158,175,0.6)";
+      });
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = isSelected ? "scale(1.2)" : "scale(1)";
+        el.style.boxShadow = isSelected
+          ? "0 0 20px rgba(201,162,75,0.6)"
+          : "0 0 10px rgba(46,158,175,0.4)";
+      });
 
-  // Fly to selection.
+      const marker = new maplibregl.Marker({ element: el })
+        .setLngLat([loc.longitude, loc.latitude])
+        .addTo(map);
+
+      el.addEventListener("click", () => setSelected(loc));
+      existing.set(loc.id, marker);
+    }
+  }, [visibleLocations, selected?.id, mapLoaded]);
+
+  // Fly to selection
   useEffect(() => {
     if (!selected || !mapRef.current) return;
-    mapRef.current.flyTo(
-      [selected.latitude, selected.longitude],
-      Math.max(mapRef.current.getZoom(), 10),
-      {
-        duration: 0.9,
-      },
-    );
+    mapRef.current.flyTo({
+      center: [selected.longitude, selected.latitude],
+      zoom: Math.max(mapRef.current.getZoom(), 11),
+      pitch: 50,
+      duration: 1500,
+      essential: true,
+    });
   }, [selected]);
 
   useEffect(() => {
@@ -342,11 +372,4 @@ export default function MemoryMapExperience({ onClose }: { onClose: () => void }
       </Sheet>
     </div>
   );
-}
-
-function markerHtml(selected: boolean): string {
-  if (selected) {
-    return `<span style="display:block;width:18px;height:18px;border-radius:9999px;background:#c9a24b;box-shadow:0 0 0 6px rgba(201,162,75,.3),0 0 12px rgba(201,162,75,.6)"></span>`;
-  }
-  return `<span style="display:block;width:12px;height:12px;border-radius:9999px;background:#8a7a5c;opacity:0.85;box-shadow:0 0 0 3px rgba(138,122,92,.2)"></span>`;
 }
