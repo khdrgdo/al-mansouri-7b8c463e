@@ -48,7 +48,7 @@ export default function LocationsMap({ points }: { points: MapPoint[] }) {
       zoom: 7,
       pitch: 30,
       bearing: -10,
-      scrollWheelZoom: false,
+      scrollZoom: false,
     });
 
     mapRef.current = map;

@@ -384,7 +384,7 @@ export const globalSearch = createServerFn({ method: "GET" })
               bucket.archive.push({ ...common, media_type: "" });
               break;
             case "document":
-              bucket.documents.push({ ...common, file_url: null });
+              bucket.documents.push({ ...common, file_url: null, description: row.excerpt });
               break;
           }
         }

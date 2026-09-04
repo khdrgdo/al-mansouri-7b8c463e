@@ -126,7 +126,6 @@ export default function MemoryMapExperience({ onClose }: { onClose: () => void }
       zoom: 6.5,
       pitch: 45,
       bearing: -17.6,
-      antialias: true,
       maxPitch: 60,
     });
 
