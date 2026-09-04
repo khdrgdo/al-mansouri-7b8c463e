@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 export type MapPoint = {
@@ -48,7 +48,7 @@ export default function LocationsMap({ points }: { points: MapPoint[] }) {
       zoom: 7,
       pitch: 30,
       bearing: -10,
-      scrollWheelZoom: false,
+      scrollZoom: false,
     });
 
     mapRef.current = map;

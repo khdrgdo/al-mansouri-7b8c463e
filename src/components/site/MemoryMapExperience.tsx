@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Link } from "@tanstack/react-router";
 import { X, Compass } from "lucide-react";
@@ -126,7 +126,6 @@ export default function MemoryMapExperience({ onClose }: { onClose: () => void }
       zoom: 6.5,
       pitch: 45,
       bearing: -17.6,
-      antialias: true,
       maxPitch: 60,
     });
 

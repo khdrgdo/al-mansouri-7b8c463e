@@ -1,12 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/sitemap.xml")({
-  server: {
-    headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=3600, s-maxage=3600",
-    },
-  },
   loader: async () => {
     const BASE = "https://al-mansouri.lovable.app";
     const { createClient } = await import("@supabase/supabase-js");
@@ -43,7 +37,12 @@ export const Route = createFileRoute("/sitemap.xml")({
 ${urls.join("\n")}
 </urlset>`;
 
-    return new Response(body);
+    return new Response(body, {
+      headers: {
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+      },
+    });
   },
   component: () => null,
 });
