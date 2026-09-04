@@ -345,8 +345,18 @@ export const globalSearch = createServerFn({ method: "GET" })
 
     // Try Full-Text Search first (faster, relevance-ranked)
     try {
-      const { data: rows } = await sb.rpc("global_search", { _query: q });
-      if (rows && rows.length > 0) {
+      const { data: rpcData } = await (sb.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: unknown }>)("global_search", { _query: q });
+      const rows = (rpcData ?? []) as Array<{
+        id: string;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        source: string;
+      }>;
+      if (rows.length > 0) {
         const bucket = {
           articles: [] as Array<{ id: string; slug: string; title: string; excerpt: string | null }>,
           events: [] as Array<{ id: string; slug: string; title: string; summary: string | null; period: string | null }>,
