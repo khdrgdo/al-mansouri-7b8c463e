@@ -212,6 +212,77 @@
   font-family: var(--font-display);
 }
 
+@utility font-narrative {
+  font-family: var(--font-serif);
+}
+
+/* فصول اليوم: خلفيات سردية متدرجة */
+@utility chapter-dawn {
+  background:
+    radial-gradient(120% 80% at 80% 0%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--sunset) 10%, var(--background)), var(--background));
+}
+
+@utility chapter-noon {
+  background:
+    radial-gradient(100% 70% at 15% 0%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 65%),
+    var(--linen);
+}
+
+@utility chapter-afternoon {
+  background:
+    radial-gradient(110% 80% at 85% 10%, color-mix(in oklab, var(--palm) 14%, transparent), transparent 60%),
+    var(--background);
+}
+
+@utility chapter-sunset {
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--sunset) 82%, var(--ink)),
+    color-mix(in oklab, var(--gold) 35%, var(--sunset))
+  );
+  color: var(--ink-foreground);
+}
+
+@utility chapter-night {
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 70%),
+    var(--ink);
+  color: var(--ink-foreground);
+}
+
+/* رقم الفصل */
+@utility chapter-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  letter-spacing: 0.22em;
+  color: color-mix(in oklab, currentcolor 65%, transparent);
+
+  &::before {
+    content: "";
+    width: 3rem;
+    height: 1px;
+    background: currentcolor;
+    opacity: 0.4;
+  }
+}
+
+/* فاصل نهري */
+@utility river-rule {
+  height: 2px;
+  background: linear-gradient(
+    to left,
+    transparent,
+    color-mix(in oklab, var(--primary) 55%, transparent),
+    color-mix(in oklab, var(--gold) 55%, transparent),
+    transparent
+  );
+}
+
+
 /* Editorial eyebrow: flowing label with gradient line */
 @utility eyebrow {
   display: inline-flex;
