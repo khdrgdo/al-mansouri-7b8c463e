@@ -5,14 +5,20 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * ذاكرة المناصير — تصميم "الماء الجاري"
- * Nile-inspired: flowing water, glass-morphism, wave dividers.
- * All colors in oklch. Modern, fluid, RTL-first.
+ * ذاكرة المناصير — «يوم على النيل»
+ * فصول اليوم: فجر، ضحى، ظهيرة، عصر، غروب، ليل.
+ * كل الألوان رموز دلالية بصيغة oklch، وواجهة RTL أولًا.
  */
 
 @theme inline {
   --font-sans: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
-  --font-display: "Tajawal", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-display: "Reem Kufi", "Tajawal", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-serif: "Amiri", Georgia, serif;
+  --color-linen: var(--linen);
+  --color-silt: var(--silt);
+  --color-palm: var(--palm);
+  --color-sunset: var(--sunset);
+
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
