@@ -27,7 +27,7 @@ export function SiteHeader() {
       className={cn(
         "fixed top-4 left-4 right-4 z-50 transition-all duration-500",
         scrolled || open
-          ? "top-3 mx-3 rounded-2xl border border-white/20 bg-white/70 shadow-lg shadow-black/5 backdrop-blur-xl md:mx-8 lg:mx-12"
+          ? "glass top-3 mx-3 rounded-2xl shadow-lg shadow-black/5 md:mx-8 lg:mx-12"
           : "mx-0 rounded-none border-transparent bg-transparent",
       )}
     >
@@ -71,7 +71,7 @@ export function SiteHeader() {
 
           <Link
             to="/contribute"
-            className="hidden rounded-full bg-gradient-to-r from-primary to-secondary px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary/25 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 md:inline-flex"
+            className="hidden rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-ink-foreground transition-all duration-300 hover:bg-primary md:inline-flex"
           >
             ساهم في الأرشيف
           </Link>
@@ -91,7 +91,7 @@ export function SiteHeader() {
       {/* Mobile panel */}
       <div
         className={cn(
-          "fixed inset-x-0 top-20 z-40 origin-top overflow-hidden rounded-2xl border border-white/20 bg-white/90 shadow-2xl backdrop-blur-xl transition-all duration-400 lg:hidden",
+          "glass fixed inset-x-0 top-20 z-40 origin-top overflow-hidden rounded-2xl shadow-2xl transition-all duration-400 lg:hidden",
           open
             ? "scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0",
@@ -119,7 +119,7 @@ export function SiteHeader() {
           <Link
             to="/contribute"
             onClick={() => setOpen(false)}
-            className="mt-6 block rounded-xl bg-gradient-to-r from-primary to-secondary px-4 py-4 text-center text-sm font-semibold text-white shadow-lg shadow-primary/25"
+            className="mt-6 block rounded-xl bg-ink px-4 py-4 text-center text-sm font-semibold text-ink-foreground shadow-lg shadow-black/10"
           >
             ساهم في الأرشيف
           </Link>

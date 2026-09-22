@@ -5,14 +5,22 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * ذاكرة المناصير — تصميم "الماء الجاري"
- * Nile-inspired: flowing water, glass-morphism, wave dividers.
- * All colors in oklch. Modern, fluid, RTL-first.
+ * ذاكرة المناصير — «يوم على النيل»
+ * فصول اليوم: فجر، ضحى، ظهيرة، عصر، غروب، ليل.
+ * كل الألوان رموز دلالية بصيغة oklch، وواجهة RTL أولًا.
  */
 
 @theme inline {
   --font-sans: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
-  --font-display: "Tajawal", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-display: "Reem Kufi", "Tajawal", "Noto Sans Arabic", system-ui, sans-serif;
+  --font-serif: "Amiri", Georgia, serif;
+  --color-linen: var(--linen);
+  --color-paper: var(--paper);
+
+  --color-silt: var(--silt);
+  --color-palm: var(--palm);
+  --color-sunset: var(--sunset);
+
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -63,86 +71,102 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.985 0.003 250);
-  --foreground: oklch(0.18 0.015 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.015 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.015 260);
-  --primary: oklch(0.40 0.14 250);
-  --primary-foreground: oklch(0.98 0.005 250);
-  --secondary: oklch(0.55 0.12 160);
-  --secondary-foreground: oklch(0.98 0.005 160);
-  --muted: oklch(0.96 0.005 250);
-  --muted-foreground: oklch(0.45 0.01 250);
-  --accent: oklch(0.92 0.015 200);
-  --accent-foreground: oklch(0.25 0.01 250);
-  --destructive: oklch(0.55 0.18 25);
-  --destructive-foreground: oklch(0.98 0.005 0);
-  --border: oklch(0.92 0.005 250);
-  --input: oklch(0.92 0.005 250);
-  --ring: oklch(0.40 0.14 250);
-  --sand: oklch(0.95 0.008 220);
-  --sand-foreground: oklch(0.3 0.01 250);
-  --gold: oklch(0.70 0.12 80);
-  --gold-foreground: oklch(0.98 0.005 80);
-  --ink: oklch(0.12 0.02 260);
-  --ink-foreground: oklch(0.98 0.005 250);
-  --nile: oklch(0.40 0.14 250);
-  --nile-foreground: oklch(0.98 0.005 250);
-  --chart-1: oklch(0.40 0.14 250);
-  --chart-2: oklch(0.55 0.12 160);
-  --chart-3: oklch(0.60 0.10 200);
-  --chart-4: oklch(0.50 0.08 220);
-  --chart-5: oklch(0.40 0.06 240);
-  --sidebar: oklch(0.18 0.015 260);
-  --sidebar-foreground: oklch(0.98 0.005 250);
-  --sidebar-primary: oklch(0.70 0.12 80);
-  --sidebar-primary-foreground: oklch(0.18 0.015 260);
-  --sidebar-accent: oklch(0.22 0.015 260);
-  --sidebar-accent-foreground: oklch(0.98 0.005 250);
-  --sidebar-border: oklch(0.25 0.012 260);
-  --sidebar-ring: oklch(0.70 0.12 80);
+  --radius: 0.375rem;
+  /* كتان النهار */
+  --background: oklch(0.973 0.014 85);
+  --foreground: oklch(0.22 0.03 60);
+  --card: oklch(0.985 0.008 85);
+  --card-foreground: oklch(0.22 0.03 60);
+  --popover: oklch(0.985 0.008 85);
+  --popover-foreground: oklch(0.22 0.03 60);
+  /* نيلي عميق */
+  --primary: oklch(0.42 0.085 215);
+  --primary-foreground: oklch(0.975 0.012 85);
+  /* أخضر نخيل */
+  --secondary: oklch(0.52 0.075 150);
+  --secondary-foreground: oklch(0.975 0.012 85);
+  --muted: oklch(0.935 0.016 80);
+  --muted-foreground: oklch(0.47 0.025 65);
+  --accent: oklch(0.90 0.035 75);
+  --accent-foreground: oklch(0.25 0.03 60);
+  --destructive: oklch(0.50 0.16 28);
+  --destructive-foreground: oklch(0.975 0.012 85);
+  --border: oklch(0.87 0.02 78);
+  --input: oklch(0.87 0.02 78);
+  --ring: oklch(0.42 0.085 215);
+  --sand: oklch(0.93 0.03 80);
+  --sand-foreground: oklch(0.28 0.03 60);
+  /* ذهب الشمس */
+  --gold: oklch(0.76 0.135 75);
+  --gold-foreground: oklch(0.20 0.03 60);
+  /* ليل النهر */
+  --ink: oklch(0.19 0.035 230);
+  --ink-foreground: oklch(0.96 0.014 85);
+  --nile: oklch(0.42 0.085 215);
+  --nile-foreground: oklch(0.975 0.012 85);
+  --linen: oklch(0.955 0.018 82);
+  --paper: oklch(0.955 0.018 82);
+  --silt: oklch(0.58 0.055 60);
+  --palm: oklch(0.52 0.075 150);
+  --sunset: oklch(0.48 0.13 30);
+  --chart-1: oklch(0.42 0.085 215);
+  --chart-2: oklch(0.52 0.075 150);
+  --chart-3: oklch(0.76 0.135 75);
+  --chart-4: oklch(0.58 0.055 60);
+  --chart-5: oklch(0.48 0.13 30);
+  --sidebar: oklch(0.19 0.035 230);
+  --sidebar-foreground: oklch(0.96 0.014 85);
+  --sidebar-primary: oklch(0.76 0.135 75);
+  --sidebar-primary-foreground: oklch(0.19 0.035 230);
+  --sidebar-accent: oklch(0.24 0.035 230);
+  --sidebar-accent-foreground: oklch(0.96 0.014 85);
+  --sidebar-border: oklch(0.28 0.03 230);
+  --sidebar-ring: oklch(0.76 0.135 75);
 }
 
 .dark {
-  --background: oklch(0.12 0.02 260);
-  --foreground: oklch(0.98 0.005 250);
-  --card: oklch(0.16 0.018 260);
-  --card-foreground: oklch(0.98 0.005 250);
-  --popover: oklch(0.16 0.018 260);
-  --popover-foreground: oklch(0.98 0.005 250);
-  --primary: oklch(0.55 0.14 250);
-  --primary-foreground: oklch(0.12 0.02 260);
-  --secondary: oklch(0.65 0.12 160);
-  --secondary-foreground: oklch(0.12 0.02 260);
-  --muted: oklch(0.22 0.012 260);
-  --muted-foreground: oklch(0.70 0.01 250);
-  --accent: oklch(0.28 0.015 220);
-  --accent-foreground: oklch(0.98 0.005 250);
-  --destructive: oklch(0.65 0.18 25);
-  --destructive-foreground: oklch(0.98 0.005 0);
-  --border: oklch(1 0 0 / 15%);
+  --background: oklch(0.16 0.032 230);
+  --foreground: oklch(0.95 0.014 85);
+  --card: oklch(0.20 0.032 230);
+  --card-foreground: oklch(0.95 0.014 85);
+  --popover: oklch(0.20 0.032 230);
+  --popover-foreground: oklch(0.95 0.014 85);
+  --primary: oklch(0.70 0.085 210);
+  --primary-foreground: oklch(0.16 0.032 230);
+  --secondary: oklch(0.66 0.085 150);
+  --secondary-foreground: oklch(0.16 0.032 230);
+  --muted: oklch(0.25 0.028 230);
+  --muted-foreground: oklch(0.74 0.02 80);
+  --accent: oklch(0.30 0.035 230);
+  --accent-foreground: oklch(0.95 0.014 85);
+  --destructive: oklch(0.62 0.17 28);
+  --destructive-foreground: oklch(0.96 0.012 85);
+  --border: oklch(1 0 0 / 14%);
   --input: oklch(1 0 0 / 18%);
-  --ring: oklch(0.55 0.14 250);
-  --sand: oklch(0.35 0.015 220);
-  --sand-foreground: oklch(0.98 0.005 250);
-  --gold: oklch(0.75 0.12 80);
-  --gold-foreground: oklch(0.12 0.02 260);
-  --ink: oklch(0.08 0.015 260);
-  --ink-foreground: oklch(0.98 0.005 250);
-  --nile: oklch(0.55 0.14 250);
-  --nile-foreground: oklch(0.98 0.005 250);
-  --sidebar: oklch(0.14 0.018 260);
-  --sidebar-foreground: oklch(0.98 0.005 250);
-  --sidebar-primary: oklch(0.75 0.12 80);
-  --sidebar-primary-foreground: oklch(0.12 0.02 260);
-  --sidebar-accent: oklch(0.20 0.015 260);
-  --sidebar-accent-foreground: oklch(0.98 0.005 250);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(0.75 0.12 80);
+  --ring: oklch(0.70 0.085 210);
+  --sand: oklch(0.34 0.03 70);
+  --sand-foreground: oklch(0.95 0.014 85);
+  --gold: oklch(0.82 0.13 78);
+  --gold-foreground: oklch(0.16 0.032 230);
+  --ink: oklch(0.12 0.03 230);
+  --ink-foreground: oklch(0.96 0.014 85);
+  --nile: oklch(0.70 0.085 210);
+  --nile-foreground: oklch(0.16 0.032 230);
+  --linen: oklch(0.22 0.03 230);
+  --paper: oklch(0.22 0.03 230);
+  --silt: oklch(0.66 0.05 62);
+  --palm: oklch(0.66 0.085 150);
+  --sunset: oklch(0.62 0.14 30);
+  --sidebar: oklch(0.14 0.03 230);
+  --sidebar-foreground: oklch(0.95 0.014 85);
+  --sidebar-primary: oklch(0.82 0.13 78);
+  --sidebar-primary-foreground: oklch(0.14 0.03 230);
+  --sidebar-accent: oklch(0.22 0.03 230);
+  --sidebar-accent-foreground: oklch(0.95 0.014 85);
+  --sidebar-border: oklch(1 0 0 / 14%);
+  --sidebar-ring: oklch(0.82 0.13 78);
 }
+
 
 @layer base {
   * {
@@ -187,6 +211,77 @@
 @utility font-display {
   font-family: var(--font-display);
 }
+
+@utility font-narrative {
+  font-family: var(--font-serif);
+}
+
+/* فصول اليوم: خلفيات سردية متدرجة */
+@utility chapter-dawn {
+  background:
+    radial-gradient(120% 80% at 80% 0%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--sunset) 10%, var(--background)), var(--background));
+}
+
+@utility chapter-noon {
+  background:
+    radial-gradient(100% 70% at 15% 0%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 65%),
+    var(--linen);
+}
+
+@utility chapter-afternoon {
+  background:
+    radial-gradient(110% 80% at 85% 10%, color-mix(in oklab, var(--palm) 14%, transparent), transparent 60%),
+    var(--background);
+}
+
+@utility chapter-sunset {
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--sunset) 82%, var(--ink)),
+    color-mix(in oklab, var(--gold) 35%, var(--sunset))
+  );
+  color: var(--ink-foreground);
+}
+
+@utility chapter-night {
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 70%),
+    var(--ink);
+  color: var(--ink-foreground);
+}
+
+/* رقم الفصل */
+@utility chapter-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  letter-spacing: 0.22em;
+  color: color-mix(in oklab, currentcolor 65%, transparent);
+
+  &::before {
+    content: "";
+    width: 3rem;
+    height: 1px;
+    background: currentcolor;
+    opacity: 0.4;
+  }
+}
+
+/* فاصل نهري */
+@utility river-rule {
+  height: 2px;
+  background: linear-gradient(
+    to left,
+    transparent,
+    color-mix(in oklab, var(--primary) 55%, transparent),
+    color-mix(in oklab, var(--gold) 55%, transparent),
+    transparent
+  );
+}
+
 
 /* Editorial eyebrow: flowing label with gradient line */
 @utility eyebrow {

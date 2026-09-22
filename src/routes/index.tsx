@@ -143,7 +143,7 @@ function HomePage() {
                 <Link to="/history">
                   <Button
                     size="lg"
-                    className="group rounded-full bg-gradient-to-r from-primary to-secondary px-8 py-6 text-base font-semibold text-white shadow-xl shadow-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 hover:scale-105"
+                    className="group rounded-full bg-gold px-8 py-6 text-base font-semibold text-gold-foreground shadow-xl shadow-black/20 transition-all duration-300 hover:shadow-2xl hover:brightness-105"
                   >
                     استكشف التاريخ
                     <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
@@ -282,7 +282,7 @@ function HomePage() {
 
       {/* ————— مساحة الراعي ————— */}
       {sponsor ? (
-        <section className="bg-water py-12">
+        <section className="chapter-noon py-12">
           <div className="mx-auto max-w-[1400px] px-5 lg:px-10">
             <Reveal>
               <div className="float-card flex flex-wrap items-center gap-6 p-6">
@@ -441,7 +441,7 @@ function HomePage() {
 
       {/* ————— الأرشيف ————— */}
       {featuredArchive.length > 0 ? (
-        <section className="bg-water py-24 md:py-32">
+        <section className="chapter-afternoon py-24 md:py-32">
           <div className="mx-auto max-w-[1400px] px-5 lg:px-10">
             <Reveal className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div>
@@ -569,7 +569,7 @@ function HomePage() {
       ) : null}
 
       {/* ————— دعوة للمساهمة ————— */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary py-24 text-white md:py-32">
+      <section className="chapter-sunset relative overflow-hidden py-24 md:py-32">
         {/* Decorative elements */}
         <div className="absolute inset-0 overflow-hidden" aria-hidden>
           <div className="absolute -left-32 -top-32 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
